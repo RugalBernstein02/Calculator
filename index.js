@@ -1,6 +1,6 @@
 // TODO: Add import statement for fitty
 
-fitty(document.querySelector("#main-display")); // fitty is included in a module
+const fitMain = fitty(document.querySelector("#main-display")); // fitty is included in a module
 
 function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
@@ -25,7 +25,7 @@ function innerText (elemId, value) {
 
 function mainText (value) {
     const result = innerText("main-display", value);
-    
+    fitMain.fit();
     return result;
 }
 function secondaryText (value) {return innerText("secondary-display", value);}

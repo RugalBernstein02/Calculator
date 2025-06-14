@@ -29,7 +29,6 @@ body > * {
 
 #main-display {
     font-family: monospace;
-    min-height: 5vmin;
     height: max-content;
     font-size: 12vmin;
     flex-shrink: 1;
@@ -82,24 +81,39 @@ body > * {
 
 .calc-button {
     font-size: 3rem;
-    margin: 2.5%;
     flex-shrink: 2;
     flex-grow: 1;
     border: 1px solid grey;
     background-image: linear-gradient(white, rgb(90, 90, 130));
 }
+
+.calc-button:not(.top-row) {
+    margin: 2%;
+}
+
 .calc-button.digit {
     background-image: linear-gradient(white, rgb(90, 120, 150));
 }
-#more-container > .calc-button {
+
+.top-row.more  {
     background-image: linear-gradient(white, rgb(150, 125, 70));
 }
-#memory-container > .calc-button {
-    background-image: linear-gradient(white, rgb(175, 150, 70));
+
+.top-row.memory {
+    background-image: linear-gradient(white, rgb(200, 175, 70));
 }
 
 #clear {
     background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 40, 40));
+}
+
+#correction {
+    background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 100, 40));
+}
+
+button.top-row {
+    width: 10%;
+    font-size: 4vmin;
 }
 
 #result {
@@ -108,30 +122,27 @@ body > * {
     grid-column: -3 / -1;
 }
 
-/* Containers */
+/* Sub-containers */
+#top-button-subcontainer {
+    grid-column: 1 / -1;
+    display: flex;
+    padding: 0.25%;
+    flex-direction: row;
+    justify-content: space-around;
+    border: 1px solid grey;
+    flex-shrink: 2;
+}
+
+#top-button-subcontainer > button {
+    margin: 0.5%;
+}
+
 #basic-operations {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     grid-column: 4 / 6;
     grid-row: 2 / -2;
-}
-#more-container {
-    margin: 1%;
-    border: 1px solid #808080;
-    grid-column: 1 / 3;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
-
-#memory-container {
-    margin: 1%;
-    border: 1px solid grey;
-    grid-column: 3 / 5;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
 }
 
 /* Extra popouts */
