@@ -72,3 +72,6 @@ If you're using a physical keyboard, you can type instead of pressing onscreen k
 |Recall memory	|Hold `m`, then press `r`	|
 |Clear memory	|Hold `m`, then press `c`	|
 |Result			|`↵`						|
+
+# Attribution
+This project uses the "fitty" JS module by Rik Schennink.
