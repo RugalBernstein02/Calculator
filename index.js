@@ -86,7 +86,7 @@ const memory = {
 
 function inputDigit (digit) {
     if (blankFlag) {
-        blankDisplay(true, false /*true*/); // Do not enable clearing both displays without first enabling state management.
+        blankDisplay(true, false /*true*/); // Do not enable clearing both displays without first implementing state management.
         blankFlag = !blankFlag;
     }
     if (mainText() === "0") {
@@ -158,7 +158,7 @@ function calculate (extras = {}) {
     }
     if (extras.percentage) {
         extras.ogo2 = operand2; // "ogo2" = original operand2
-        operand2 = operand1 * (operand2 / 100);
+        operand2 = operand1 * (operand2 / 1000);
     }
     let result;
     switch (operation) {

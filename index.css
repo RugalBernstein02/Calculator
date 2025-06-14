@@ -55,7 +55,7 @@ body > * {
 }
 
 #status-bar > .on {
-    color: darkgreen;
+    color: #0f0;
 }
 
 #status-bar > .off {
