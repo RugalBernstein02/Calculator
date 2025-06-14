@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const scriptE = document.createElement("script");
+                scriptE.setAttribute("src", "index.js");
+                document.querySelector("script").appendChild(scriptE);
+            });
+        </script>
+    </head>
+    <body>
+        <div id="display-container">
+            <div id="status-bar">
+                <span id="memory-lcd" class="off left">M</span>
+                <span id="current-expression" class="fixed right"></span>
+            </div>
+            <output id="main-output">0</output>
+        </div>
+        <!-- TODO: Change labels to SVG images -->
+        <div id="button-container">
+            <div id="memory-container">
+                <button id="memory-add" class="calc-button">M+</button>
+                <button id="memory-recall" class="calc-button">MR</button>
+                <button id="memory-clear" class="calc-button">MC</button>
+            </div>
+            <button id="clear" class="calc-button">C</button>
+            <button id="divide" class="calc-button basic-operator">÷</button>
+            <button id="digit-7" class="calc-button digit" name="7">7</button>
+            <button id="digit-8" class="calc-button digit" name="8">8</button>
+            <button id="digit-9" class="calc-button digit" name="9">9</button>
+            <button id="multiply" class="calc-button basic-operator">✕</button>
+            <button id="digit-4" class="calc-button digit" name="4">4</button>
+            <button id="digit-5" class="calc-button digit" name="5">5</button>
+            <button id="digit-6" class="calc-button digit" name="6">6</button>
+            <button id="add" class="calc-button basic-operator">+</button>
+            <button id="digit-1" class="calc-button digit" name="1">1</button>
+            <button id="digit-2" class="calc-button digit" name="2">2</button>
+            <button id="digit-3" class="calc-button digit" name="3">3</button>
+            <button id="subtract" class="calc-button basic-operator">-</button>
+            <button id="digit-0" class="calc-button digit">0</button>
+            <button id="decimal" class="calc-button">.</button>
+            <button id="percentage" class="calc-button">%</button>
+            <button id="result" class="calc-button">=</button>
+        </div>
+    </body>
+</html>
