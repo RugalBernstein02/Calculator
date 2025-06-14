@@ -1,19 +1,28 @@
-// TODO: Add import statement for fitty
-
-const fitMain = fitty(document.querySelector("#main-display")); // fitty is included in a module
+// const fitMain = fitty(document.querySelector("#main-display")); // is included in a module
 
 function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
 }
-
-let operand1, // The first operand supplied to a binary operation 
-operand2, // The second operand supplied to a binary operation
-operation = null, // The queued operation to perform when result is requested
-lastFunc, // the last function which was called, used to decide whether to clear the main display and/or the currentExpression display 
-mDown = false, // The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work.
-repeat, // The repeat operation to perform if the equals key is pressed.
-inputStage = 1, // The current stage of input. Inputting data is divided into two stages, for inputting each operand. This variable is 1 if the user is entering the first operand, and 2 if the user is entering the second operand, or has just completed an operation.
-blankFlag = false; // Flag which controls the automatic blanking of the main display.
+/** The first operand supplied to a binary operation. */
+let operand1,
+/** The second operand supplied to a binary operation. */
+operand2,
+/** The queued operation to perform when the result is requested. */
+operation = null,
+/** The last function which was called, used to decide whether to clear the main display and/or the secondary display.  */
+lastFunc,
+/** The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work. */
+mDown = false,
+/** The repeat operation to perform if the `=` key is pressed just after a calculation, but before an operation or operand is entered. */
+repeat,
+/** The current stage of input. 
+Inputting data is divided into three stages, for inputting each operand. The value of this variable is:
+0 if the user has not entered any data for the next operation,
+1 if the user is entering the first operand, and 
+2 if the user is entering the second operand. */
+inputStage = 1, 
+/** Flag which controls the automatic clearing of the displays. */
+blankFlag = false;
 
 function innerText (elemId, value) {
     const old = document.getElementById(elemId).innerText;
@@ -25,7 +34,7 @@ function innerText (elemId, value) {
 
 function mainText (value) {
     const result = innerText("main-display", value);
-    fitMain.fit();
+    // fitMain.fit();
     return result;
 }
 function secondaryText (value) {return innerText("secondary-display", value);}
@@ -65,7 +74,7 @@ const memory = {
         secondaryText(`M = `);
         setTimeout(() => {
             secondaryText(old);
-        }, 50);
+        }, 500);
         mainText(memory.value);
         if (memory.value === 0) {
             memory.lcd.classList.replace("on", "off");

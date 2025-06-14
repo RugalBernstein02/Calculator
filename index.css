@@ -30,7 +30,7 @@ body > * {
 #main-display {
     font-family: monospace;
     height: 14vmin;
-    min-height: 14vmin;
+    max-height: 14vmin;
     font-size: 12vmin;
     flex-shrink: 1;
     overflow: hidden;
@@ -53,7 +53,7 @@ body > * {
 }
 
 #status-bar > .on {
-    color: #0f0;
+    color: green;
 }
 
 #status-bar > .off {
@@ -84,7 +84,7 @@ body > * {
     flex-shrink: 2;
     flex-grow: 1;
     border: 1px solid grey;
-    background-image: linear-gradient(white, rgb(90, 90, 130));
+    background-image: linear-gradient(white, #44a);
 }
 
 .calc-button:not(.top-row) {
@@ -92,23 +92,23 @@ body > * {
 }
 
 .calc-button.digit {
-    background-image: linear-gradient(white, rgb(90, 120, 150));
+    background-image: linear-gradient(white, #77f);
 }
 
 .top-row.more  {
-    background-image: linear-gradient(white, rgb(150, 125, 70));
+    background-image: linear-gradient(white, #640);
 }
 
 .top-row.memory {
-    background-image: linear-gradient(white, rgb(200, 175, 70));
+    background-image: linear-gradient(white, #cb0);
 }
 
 #clear-display {
-    background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 40, 40));
+    background-image: linear-gradient(white, #f00);
 }
 
 #correction {
-    background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 100, 40));
+    background-image: linear-gradient(white, #f70);
 }
 
 button.top-row {
@@ -117,7 +117,7 @@ button.top-row {
 }
 
 #result {
-    background-image: linear-gradient(rgb(180, 255, 180), rgb(90, 255, 120));
+    background-image: linear-gradient(rgb(100, 255, 200), rgb(90, 255, 120));
     grid-row: -2 / -1;
     grid-column: -3 / -1;
 }
@@ -144,5 +144,5 @@ button.top-row {
 }
 
 .calc-button:active {
-    box-shadow: 0px 1px 1vw 0vw red;
+    box-shadow: 1px 1px 1vw 1vw red;
 }
