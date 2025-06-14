@@ -2,13 +2,6 @@
 <html>
     <head>
         <link rel="stylesheet" href="index.css">
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const scriptE = document.createElement("script");
-                scriptE.setAttribute("src", "index.js");
-                document.querySelector("script").appendChild(scriptE);
-            });
-        </script>
     </head>
     <body>
         <div id="display-container">
@@ -51,4 +44,6 @@
             <button id="result" class="calc-button">=</button>
         </div>
     </body>
+    <script src="fitty.min.js" type="module"></script>
+    <script src="index.js" type="module"></script>
 </html>

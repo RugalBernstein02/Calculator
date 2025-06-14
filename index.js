@@ -1,3 +1,7 @@
+// TODO: Add import statement for fitty
+
+fitty(document.querySelector("#main-display")); // fitty is included in a module
+
 function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
 }
@@ -19,7 +23,11 @@ function innerText (elemId, value) {
     return old;
 }
 
-function mainText (value) {return innerText("main-display", value);}
+function mainText (value) {
+    const result = innerText("main-display", value);
+    
+    return result;
+}
 function secondaryText (value) {return innerText("secondary-display", value);}
 
 function attribute (elemId, attr, value) {

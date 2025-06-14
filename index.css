@@ -34,8 +34,7 @@ body > * {
     font-size: 12vmin;
     flex-shrink: 1;
     flex-grow: -1;
-    overflow-x: scroll;
-    overflow-y: hidden;
+    overflow: hidden;
     padding: 0;
     margin: 0.5%;
 }
@@ -92,9 +91,15 @@ body > * {
 .calc-button.digit {
     background-image: linear-gradient(white, rgb(90, 120, 150));
 }
+#more-container > .calc-button {
+    background-image: linear-gradient(white, rgb(150, 125, 70));
+}
+#memory-container > .calc-button {
+    background-image: linear-gradient(white, rgb(175, 150, 70));
+}
 
 #clear {
-    background-image: linear-gradient(rgb(255 180 180), rgb(255, 100, 80));
+    background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 40, 40));
 }
 
 #result {
