@@ -18,10 +18,9 @@ When you have done a calculation, you may press the `=` key to perform the same 
 
 ### Percentage
 #### Mode 1
-Pressing the `%` key before starting a calculation divides the number by 100. For example, pressing `3` then `%` will result in `0.03`. (Press Clear (`C`) first to ensure that a calculation is not in progress.)
+Pressing the `%` key after entering a number, but before starting a calculation divides the number by 100. For example, pressing `3` then `%` will result in `0.03`. (If this doesn't work, press Clear (`C`) first to ensure that a calculation is not in progress.)
 #### Mode 2
-You can add or subtract percentages of numbers by typing the first number, then a basic operation, then the percentage to multiply the first number by, then `=`. For example, subtracting 15% of 16.99 gives 14.4415. This can be calculated as follows:
-1. Input `1` `6` `.` `9` `9` `-` `15` `%`
+You can add or subtract percentages of numbers by typing the first number, then a basic operation, then the percentage to multiply the first number by, then `=`. For example, subtracting 15% of 16.99 gives 14.4415. This can be calculated as: `1` `6` `.` `9` `9` `-` `1` `5` `%`.
 
 <img src="images/percentage-mode2-1.png" width="50%">
 
@@ -33,7 +32,7 @@ Input `3` `.` `1` `4` `1` `5` `9` `2` `6` `5` `4`, then press `M+`.
 
 <img src="images/memory-1.png" width="50%">
 
-Note that the "M" status light turns green, to indicate that a non-zero value is stored in memory.
+Note that the "M" status light turns green, to indicate that a non-zero value is stored in memory. (this is circled in the picture above)
 
 Press `M+` again, to add that number to memory again:
 
@@ -72,4 +71,4 @@ If you're using a physical keyboard, you can type instead of pressing onscreen k
 |Add to memory	|Hold `m`, then press `+`	|
 |Recall memory	|Hold `m`, then press `r`	|
 |Clear memory	|Hold `m`, then press `c`	|
-|Result			|`↪`						|
+|Result			|`↵`						|
