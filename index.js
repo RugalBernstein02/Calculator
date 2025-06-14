@@ -2,8 +2,8 @@ function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
 }
 
-let operand1, // The first operand supplied to a binary operator 
-operand2, // The second operand supplied to a binary operator
+let operand1, // The first operand supplied to a binary operation 
+operand2, // The second operand supplied to a binary operation
 operation = null, // The queued operation to perform when result is requested
 lastFunc, // the last function which was called, used to decide whether to clear the main display and/or the currentExpression display 
 mDown = false, // The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work.
@@ -43,7 +43,7 @@ function blankDisplay (main = true, secondary = true) {
     }
 }
 
-const operatorSymbols = {
+const operationSymbols = {
     "add": "+",
     "subtract": "-",
     "divide": "÷",
@@ -143,7 +143,7 @@ function prepare (op) {
     inputStage = 2;
     operand1 = +(mainText());
     operation = op;
-    secondaryText(`${operand1} ${operatorSymbols[operation]}`);
+    secondaryText(`${operand1} ${operationSymbols[operation]}`);
     mainText("0");
     lastFunc = "prepare";
 }
@@ -178,7 +178,7 @@ function calculate (extras = {}) {
             console.warn(new Error("Unknown operation " + operation));
     }
     result = round(result, 12);
-    secondaryText(`${operand1} ${operatorSymbols[operation]} ${extras.percentage ? extras.ogo2 + "%" : operand2}`);
+    secondaryText(`${operand1} ${operationSymbols[operation]} ${extras.percentage ? extras.ogo2 + "%" : operand2}`);
     mainText(result);
     operand1 = result;
     inputStage = 1;

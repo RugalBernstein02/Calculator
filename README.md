@@ -54,7 +54,7 @@ It will then change to show the calculation in progress.
 <img src="images/memory-5.png" width="50%">
 
 #### Clear memory
-When you have a number, saved in memory, press `MC` to clear it. The "M" status light turns gray to indicate the absence of a value.
+When you have a number, saved in memory, press `MC` to clear it. The "M" status light turns white to indicate the absence of a value.
 
 ### Keyboard input
 If you're using a physical keyboard, you can type instead of pressing onscreen keys. These are the set key bindings.
