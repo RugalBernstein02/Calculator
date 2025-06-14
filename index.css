@@ -27,7 +27,7 @@ body > * {
     flex-direction: column;
 }
 
-#main-output {
+#main-display {
     font-family: monospace;
     min-height: 5vmin;
     height: max-content;

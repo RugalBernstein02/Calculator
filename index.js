@@ -19,8 +19,8 @@ function innerText (elemId, value) {
     return old;
 }
 
-function mainText (value) {return innerText("main-output", value);}
-function currentText (value) {return innerText("current-expression", value);}
+function mainText (value) {return innerText("main-display", value);}
+function secondaryText (value) {return innerText("secondary-display", value);}
 
 function attribute (elemId, attr, value) {
     const old = document.getElementById(elemId).getAttribute(attr);
@@ -30,10 +30,16 @@ function attribute (elemId, attr, value) {
     return old;
 } 
 
-/** @param {string} func - the name of the last function which was called */
-function blankDisplay (func) {
-    switch (func) {
-        
+/** Clear the displays. To clear a display, pass `true` for the relevant argument, or `false` to preserve it. The default for both parameters is `true`.
+ *  @param {boolean} [main = true] - whether to clear the main display
+ *  @param {boolean} [secondary = true] - whether to clear the secondary display
+ */
+function blankDisplay (main = true, secondary = true) {
+    if (main) {
+        mainText("0");
+    }
+    if (secondary) {
+        secondaryText("");
     }
 }
 
@@ -47,16 +53,11 @@ const operatorSymbols = {
 const memory = {
     "value": 0, // The value currently stored in memory
     "recall": () => { // Show the value in memory
-        let old = currentText();
-        currentText(`M = `);
-        if (inputStage === 1) {
-            blankDisplay();
-        }
-        else if (inputStage === 2) {
-            setTimeout(() => {
-                currentText(old);
-            }, 1000);
-        }
+        let old = secondaryText();
+        secondaryText(`M = `);
+        setTimeout(() => {
+            secondaryText(old);
+        }, 50);
         mainText(memory.value);
         if (memory.value === 0) {
             memory.lcd.classList.replace("on", "off");
@@ -85,8 +86,7 @@ const memory = {
 
 function inputDigit (digit) {
     if (blankFlag) {
-        mainText("0");
-        // currentText("") // Do not enable this line without first enabling state management.
+        blankDisplay(true, false /*true*/); // Do not enable clearing both displays without first enabling state management.
         blankFlag = !blankFlag;
     }
     if (mainText() === "0") {
@@ -101,7 +101,7 @@ function inputDigit (digit) {
 function inputDecimal () {
     if (!mainText().includes(".")) {
         if (blankFlag) {
-            currentText("");
+            secondaryText("");
             blankFlag = !blankFlag;
         }
         if (mainText() === "") {
@@ -130,8 +130,7 @@ function backspace () {
 }
 
 function clear () {
-    mainText("0");
-    currentText("");
+    blankDisplay(true, true);
     operand1 = undefined;
     operand2 = undefined;
     operation = undefined;
@@ -144,7 +143,7 @@ function prepare (op) {
     inputStage = 2;
     operand1 = +(mainText());
     operation = op;
-    currentText(`${operand1} ${operatorSymbols[operation]}`);
+    secondaryText(`${operand1} ${operatorSymbols[operation]}`);
     mainText("0");
     lastFunc = "prepare";
 }
@@ -179,7 +178,7 @@ function calculate (extras = {}) {
             console.warn(new Error("Unknown operation " + operation));
     }
     result = round(result, 12);
-    currentText(`${operand1} ${operatorSymbols[operation]} ${extras.percentage ? extras.ogo2 + "%" : operand2}`);
+    secondaryText(`${operand1} ${operatorSymbols[operation]} ${extras.percentage ? extras.ogo2 + "%" : operand2}`);
     mainText(result);
     operand1 = result;
     inputStage = 1;

@@ -1,3 +1,6 @@
+- Clear floating point error (0.07% = 0.0007000000000000001)
+    Number.EPSILON?
+- Second functions (square, square root, nth powers and roots)
 - Complete test
 - Negate operation
 - Memory feature
