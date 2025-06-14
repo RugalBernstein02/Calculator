@@ -224,8 +224,13 @@ document.querySelectorAll(".calc-button").forEach(button => {
             case "decimal":
                 handler = inputDecimal;
                 break;
-            case "clear":
+            case "clear-display":
                 handler = clear;
+                break;
+            case "correction":
+                handler = () => {
+                    blankDisplay(true, false);
+                };
                 break;
             case "result":
                 handler = calculate;
@@ -257,7 +262,7 @@ document.addEventListener("keydown", (event) => {
         document.getElementById(`digit-${key}`).click();
     }
     else if (key === "x") {
-        document.getElementById("clear").click();
+        document.getElementById("clear-display").click();
     }
     else if (key === "/" || key == "\\") {
         document.getElementById("divide").click();
@@ -293,7 +298,7 @@ document.addEventListener("keydown", (event) => {
             document.getElementById("memory-clear").click();
         }
         else {
-            document.getElementById("clear").click();
+            document.getElementById("clear-display").click();
         }
     }
 });

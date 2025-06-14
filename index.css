@@ -29,10 +29,10 @@ body > * {
 
 #main-display {
     font-family: monospace;
-    height: max-content;
+    height: 14vmin;
+    min-height: 14vmin;
     font-size: 12vmin;
     flex-shrink: 1;
-    flex-grow: -1;
     overflow: hidden;
     padding: 0;
     margin: 0.5%;
@@ -103,7 +103,7 @@ body > * {
     background-image: linear-gradient(white, rgb(200, 175, 70));
 }
 
-#clear {
+#clear-display {
     background-image: linear-gradient(rgb(255, 200, 200), rgb(175, 40, 40));
 }
 
@@ -126,10 +126,8 @@ button.top-row {
 #top-button-subcontainer {
     grid-column: 1 / -1;
     display: flex;
-    padding: 0.25%;
     flex-direction: row;
     justify-content: space-around;
-    border: 1px solid grey;
     flex-shrink: 2;
 }
 
@@ -145,25 +143,6 @@ button.top-row {
     grid-row: 2 / -2;
 }
 
-/* Extra popouts */
-.popout {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    background-color: grey;
-    border: 2px solid blue;
-    width: 50%;
-    position: absolute;
-    padding: 1% 0;
-    z-index: 5;
-}
-.popout > button {
-    margin: 0;
-    padding: 1%;
-}
-.popout[visible=true] {
-    visibility: visible;
-}
-.popout[visible=false] {
-    visibility: hidden;
+.calc-button:active {
+    box-shadow: 0px 1px 1vw 0vw red;
 }
