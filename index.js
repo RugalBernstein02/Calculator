@@ -53,6 +53,8 @@ const NO_OP = () => {};
 let operand1,
 /** The second operand supplied to a binary operation. */
 operand2,
+/** The operands which will be supplied to a operation. */
+operands = [],
 /** The queued operation to perform when the result is requested. */
 operation = Operation.empty,
 /** The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work. */
@@ -74,7 +76,7 @@ const operations = [
     new Operation("add", '+', (a, b) => (a + b)),
     new Operation("subtract", '-', (a, b) => (a - b)),
     // U+00D7 = "×" MULTIPLICATION SIGN
-    new Operation("multiply", '\U00D7', (a, b) => (a * b)), 
+    new Operation("multiply", '\u00D7', (a, b) => (a * b)), 
     new Operation("divide", '÷', (a, b) => (a / b)),
     new Operation("hundredth", '%', (a) => (a / 100)),
     new Operation("square", '²', (a) => (a ** 2), ["nonspaced"]),
@@ -185,9 +187,8 @@ function backspace () {
 function clear () {
     blankDisplay(true, true);
     // Reset internal variables to their initial values
-    operand1 = undefined;
-    operand2 = undefined;
-    operation = undefined;
+    operands = [];
+    operation = Operation.empty;
     inputStage = 0;
 }
 
@@ -207,48 +208,45 @@ function set2ndf (enabled) {
 
 function prepare (op) {
     inputStage = 2;
-    operand1 = +(mainText());
+    operands[0] = +(mainText());
     operation = op;
     let text = "";
     if (operation.isPrefix) {text += operation.symbol + " ";}
-    text += operand1 + " ";
+    text += operands[0] + " ";
     if (!operation.isPrefix) {text += operation.symbol + " ";}
     secondaryText(text);
     mainText("0");
-    if (operation.arity == 1) {calculate();}
+    if (operation.length == 1) {calculate();}
 }
 
 function calculate (extras = {}) {
     // Repeat mechanism
     // inputStage is only set to 1 after input, 
     // therefore, if it is instead 0, that means that we have just returned from calculate.
-    if (inputStage === 0) {
-        operand1 = +(mainText());
-    }
-    else {
-        operand2 = +(mainText());
-    }
+    operands[inputStage === 0 ? 0 : 1] = +(mainText()); 
 
     if (operation.length < 2) {
-        operand2 = undefined;
+        operands[1] = undefined;
     }
     if (extras.percentage) {
-        extras.ogo2 = operand2; // "ogo2" = original operand2
-        operand2 = operand1 * (operand2 / 100);
+        extras.ogo2 = operands[1]; // "ogo2" = original operand2
+        operands[1] = operands[0] * (operands[1] / 100);
     }
     
-    let result = operation(operand1, operand2);
+    // TODO Move operands to top
+    operands.length = operation.length;
+    let result = operation.apply(operation, operands);
     result = round(result, 12);
     mainText(result);
 
     if (extras.percentage) {
-        operand2 = extras.ogo2 + "%";
+        operands[1] = extras.ogo2 + "%";
     }
-    let text = operation.format(operand1, operand2);
+    let text = operation.format.apply(operation, operands);
     secondaryText(text);
-    if (operation.name == "divide" && operand2 == 0) {
+    if (operation.name == "divide" && operands[1] == 0) {
         mainText("undefined");
-        operation = undefined;
+        operation = Operation.empty;
     }
     inputStage = 0;
     oninput = blankDisplay;

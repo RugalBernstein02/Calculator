@@ -1,4 +1,5 @@
 // Mateo Joubert
+"use strict";
 
 function parseExtras (extras) {
     if (!extras) {return {};}
@@ -10,6 +11,7 @@ function parseExtras (extras) {
             result["is" + capitalize(key)] = true;
         }
     }
+    return result;
 }
 
 let Operation = class Operation extends Function {
@@ -52,7 +54,7 @@ let Operation = class Operation extends Function {
       * squareRoot.format(6)
       * >> "√6"
       * add.format(4)
-      * >> " + "
+      * >> "4 + "
       * 
       * @param {number[]} args - the operands for this operation
       */
