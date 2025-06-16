@@ -228,16 +228,14 @@ function calculate (extras = {}) {
         operand2 = +(mainText());
     }
 
-    // if (extras.percentage) {
-    //     extras.ogo2 = operand2; // "ogo2" = original operand2
-    //     operand2 = operand1 * (operand2 / 100);
-    // }
-
-    let operand2 = undefined;
-    if (operation.length === 2) {
+    if (operation.length >= 2) {
         if (extras.percentage) {
-            
+            extras.ogo2 = operand2; // "ogo2" = original operand2
+            operand2 = operand1 * (operand2 / 100);
         }
+    }
+    else {
+        operand2 = undefined;
     }
     let text = operation.format(operand1, operand2);
     let result = operation(operand1, operand2);
@@ -364,4 +362,5 @@ document.addEventListener("keydown", (event) => {
             document.getElementById("correction").click();
         }
     }
+    
 });
