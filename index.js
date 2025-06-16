@@ -318,8 +318,8 @@ document.addEventListener("keydown", (event) => {
         mDown = true;
     }
 
-    // if key is digit
     if (+key || key === "0") {
+        // key is digit
         document.getElementById(`digit-${key}`).click();
     }
     else if (key === "x") {
@@ -361,7 +361,7 @@ document.addEventListener("keydown", (event) => {
             document.getElementById("memory-clear").click();
         }
         else {
-            document.getElementById("clear-all").click();
+            document.getElementById("correction").click();
         }
     }
 });
