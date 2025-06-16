@@ -22,13 +22,13 @@ body > * {
     text-align: right;
     height: 21vmin;
     border: 1px solid black;
+    font-family: monospace;
     background-color: darkgrey;
     display: flex;
     flex-direction: column;
 }
 
 #main-display {
-    font-family: monospace;
     height: 14vmin;
     max-height: 14vmin;
     font-size: 12vmin;
@@ -103,12 +103,12 @@ body > * {
     background-image: linear-gradient(white, #cb0);
 }
 
-#clear-display {
+#clear-all {
     background-image: linear-gradient(white, #f00);
 }
 
 #correction {
-    background-image: linear-gradient(white, #f70);
+    background-image: linear-gradient(white, #f70, #f00);
 }
 
 button.top-row {
@@ -144,5 +144,5 @@ button.top-row {
 }
 
 .calc-button:active {
-    box-shadow: 1px 1px 1vw 1vw red;
+    box-shadow: 1px 1px 2vw 0 red;
 }

@@ -20,7 +20,7 @@
                 <button id="memory-recall" class="calc-button top-row memory">MR</button>
                 <button id="memory-clear" class="calc-button top-row memory">MC</button>
                 <button id="correction" class="calc-button top-row clear">C</button>
-                <button id="clear-display" class="calc-button top-row clear">AC</button>
+                <button id="clear-all" class="calc-button top-row clear">AC</button>
             </div>
             <button id="digit-7" class="calc-button digit" name="7">7</button>
             <button id="digit-8" class="calc-button digit" name="8">8</button>
@@ -33,16 +33,17 @@
             <button id="digit-3" class="calc-button digit" name="3">3</button>
             <button id="digit-0" class="calc-button digit" name="0">0</button>
             <div id="basic-operations">
-                <button id="divide" class="calc-button basic-operation">÷</button>
-                <button id="multiply" class="calc-button basic-operation">✕</button>
-                <button id="add" class="calc-button basic-operation">+</button>
-                <button id="subtract" class="calc-button basic-operation">-</button>
+                <button id="divide" class="calc-button basic-operation" data-operation="divide" data-symbol="÷" data-secondf="nth-root <sup>x</sup>√y">÷</button>
+                <button id="multiply" class="calc-button basic-operation" data-operation="multiply" data-symbol="✕" data-secondf="power x<sup>y</sup>">✕</button>
+                <button id="subtract" class="calc-button basic-operation" data-operation="subtract" data-symbol="-" data-secondf="square-root √">-</button>
+                <button id="add" class="calc-button basic-operation" data-operation="add" data-symbol="+" data-secondf="square x²">+</button>
             </div>
             <button id="decimal" class="calc-button">.</button>
-            <button id="percentage" class="calc-button">%</button>
+            <button id="percentage" class="calc-button" data-symbol="%" data-secondf="scientific ⏨">%</button>
             <button id="result" class="calc-button">=</button>
         </div>
     </body>
-    <script src="fitty.min.js" type="module"></script>
-    <script src="index.js" type="module"></script>
+    <script src="fitty.min.js" async="false"></script>
+    <script src="Operation.js" async="false"></script>
+    <script src="index.js" async="false"></script>
 </html>

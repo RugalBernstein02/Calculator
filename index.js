@@ -1,71 +1,105 @@
-// const fitMain = fitty(document.querySelector("#main-display")); // is included in a module
+"use strict";
 
+const fitMain = fitty(document.querySelector("#main-display"));
+fitMain.freeze();
+
+// § helper functions 
+
+/** Round a number off to the given number of decimal places
+  * @example round(Math.PI, 6) => 3.141593
+  * @param {number} x - the number to round off
+  * @param {number} n - the number of decimal places to round to
+  */
 function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
 }
+
+/** Set the `innerText` property of an element, and return its old value.  
+ *  Does not change the `innerText` if `value` is undefined.  
+ *  @param {string | HTMLElement} elem - the id or DOM object for the target element
+ *  @param {string | undefined} value - the new `innerText` to assign to the element, or undefined to leave it as is
+ *  @returns the `innerText` of the element before it was changed
+ */
+function innerText (elem, value) {
+    if (!(elem instanceof HTMLElement)) {elem = document.getElementById(elem)}
+    const old = elem.innerText;
+    if (value != undefined) {
+        elem.innerText = value;
+    }
+    return old;
+}
+
+/** Set the value of an attribute of an element, and return its old value.  
+ *  Does not change the attribute if `value` is undefined.  
+ *  @param {string | HTMLElement} elem - the id or DOM object for the target element
+ *  @param {string} attr - the name of the attribute to change
+ *  @param {string | undefined} value - the new `innerText` to assign to the element, or undefined to leave it as is
+ *  @returns the `innerText` of the element before it was changed
+ */
+function attribute (elem, attr, value) {
+    if (!(elem instanceof HTMLElement)) {elem = document.getElementById(elem);}
+    const old = elem.getAttribute(attr);
+    if (value != undefined) {
+        elem.setAttribute(attr, value);
+    }
+    return old;
+} 
+
+// § variables and constants
+
+/** A function which does nothing. Used as a default or substitute value where a function is required. */
+const NO_OP = () => {};
 /** The first operand supplied to a binary operation. */
 let operand1,
 /** The second operand supplied to a binary operation. */
 operand2,
 /** The queued operation to perform when the result is requested. */
-operation = null,
-/** The last function which was called, used to decide whether to clear the main display and/or the secondary display.  */
-lastFunc,
+operation = Operation.empty,
 /** The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work. */
 mDown = false,
-/** The repeat operation to perform if the `=` key is pressed just after a calculation, but before an operation or operand is entered. */
-repeat,
+/** `true` if second function mode is enabled */
+secondf = false,
+/** The function to call the next time something is entered */
+oninput = NO_OP,
 /** The current stage of input. 
 Inputting data is divided into three stages, for inputting each operand. The value of this variable is:
-0 if the user has not entered any data for the next operation,
-1 if the user is entering the first operand, and 
+0 if no data has been entered yet,  
+1 if the user is entering the first operand, and  
 2 if the user is entering the second operand. */
-inputStage = 1, 
-/** Flag which controls the automatic clearing of the displays. */
-blankFlag = false;
+inputStage = 0;
 
-function innerText (elemId, value) {
-    const old = document.getElementById(elemId).innerText;
-    if (value != undefined) {
-        document.getElementById(elemId).innerText = value;
-    }
-    return old;
-}
+// § Operations
 
-function mainText (value) {
-    const result = innerText("main-display", value);
-    // fitMain.fit();
-    return result;
-}
-function secondaryText (value) {return innerText("secondary-display", value);}
+const operations = [
+    new Operation("add", '+', (a, b) => (a + b)),
+    new Operation("subtract", '-', (a, b) => (a - b)),
+    new Operation("multiply", '×', (a, b) => (a * b)),
+    new Operation("divide", '÷', (a, b) => (a / b)),
+    new Operation("hundredth", '%', (a) => (a / 100)),
+    new Operation("square", '²', (a) => (a ** 2)),
+    new Operation("square-root", '√', (a) => (a ** 0.5), ["prefix", "nonspaced"]),
+    new Operation("power", "^", (a, b) => (a ** b)),
+    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), ["nonspaced"]),
+    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), ["nonspaced"]),
+]
 
-function attribute (elemId, attr, value) {
-    const old = document.getElementById(elemId).getAttribute(attr);
-    if (value != undefined) {
-        document.getElementById(elemId).setAttribute(attr, value);
-    }
-    return old;
-} 
-
-/** Clear the displays. To clear a display, pass `true` for the relevant argument, or `false` to preserve it. The default for both parameters is `true`.
- *  @param {boolean} [main = true] - whether to clear the main display
- *  @param {boolean} [secondary = true] - whether to clear the secondary display
+/** Find a operation in the `operations` array by index in the array, name or symbol.
+ *  @param {string} searchKey - The string to search for
+ *  @returns {Operation} the Operation whose index, name or symbol is the same as `searchKey`
  */
-function blankDisplay (main = true, secondary = true) {
-    if (main) {
-        mainText("0");
-    }
-    if (secondary) {
-        secondaryText("");
+Operation.resolve = function (searchKey) {
+    if (searchKey in operations) {return operations[searchKey];}
+    else {
+        for (let operation of operations) {
+            if (operation.name === searchKey ||
+                operation.symbol === searchKey
+             ) {return operation;}
+        }
+        return null;
     }
 }
 
-const operationSymbols = {
-    "add": "+",
-    "subtract": "-",
-    "divide": "÷",
-    "multiply": "✕",
-}
+// § Basic functions for interacting with the display
 
 const memory = {
     "value": 0, // The value currently stored in memory
@@ -82,50 +116,51 @@ const memory = {
         else {
             memory.lcd.classList.replace("off", "on");
         }
-        blankFlag = true;
-        lastFunc = "memory.recall";
     }, 
     "add": () => {
         memory.value += +(mainText());
         memory.recall();
-        lastFunc = "memory.add";
     },
     "clear": () => {
         memory.value = 0;
         memory.recall();
-        lastFunc = "memory.clear";
     },
-    "recallBtn": document.querySelector("#memory-recall"),
-    "clearBtn": document.querySelector("#memory-clear"),
-    "addBtn": document.querySelector("#memory-add"),
     "lcd": document.querySelector("#memory-lcd"),
 }
 
-function inputDigit (digit) {
-    if (blankFlag) {
-        blankDisplay(true, false /*true*/); // Do not enable clearing both displays without first implementing state management.
-        blankFlag = !blankFlag;
+function mainText (value) {
+    const result = innerText("main-display", value);
+    // fitMain.fit();
+    return result;
+}
+function secondaryText (value) {return innerText("secondary-display", value);}
+
+/** Clear the displays. To clear a display, pass `true` for the relevant argument, or `false` to preserve its current text. The default for both parameters is `true`.
+ *  @param {boolean} [main = true] - whether to clear the main display
+ *  @param {boolean} [secondary = true] - whether to clear the secondary display
+ */
+function blankDisplay (main = true, secondary = true) {
+    if (main) {
+        mainText("0");
     }
-    if (mainText() === "0") {
-        mainText(digit);
+    if (secondary) {
+        secondaryText("");
     }
-    else {
-        mainText(mainText().concat(digit));
-    }
-    lastFunc = "inputDigit";
 }
 
-function inputDecimal () {
-    if (!mainText().includes(".")) {
-        if (blankFlag) {
-            secondaryText("");
-            blankFlag = !blankFlag;
-        }
-        if (mainText() === "") {
-            mainText(0);
-        }
-        mainText(mainText().concat("."));
-        lastFunc = "inputDecimal";
+function input (char) {
+    oninput();
+    oninput = NO_OP;
+    if (char === "." && mainText().includes(".")) {return null;}
+    if (inputStage === 0) {inputStage = 1;}
+    if (mainText() === "") {
+        mainText(0);
+    }
+    if (mainText() === "0") {
+        mainText(char);
+    }
+    else {
+        mainText(mainText().concat(char));
     }
 }
 
@@ -148,115 +183,132 @@ function backspace () {
 
 function clear () {
     blankDisplay(true, true);
+    // Reset internal variables to their initial values
     operand1 = undefined;
     operand2 = undefined;
     operation = undefined;
-    inputStage = 1;
-    blankFlag = false;
-    lastFunc = "clear";
+    inputStage = 0;
+}
+
+function set2ndf (enabled) {
+    secondf = typeof enabled === "boolean" ? enabled : !secondf;
+    document.querySelector("#second-function").innerHTML = secondf ? "basic" : "2<sup>nd</sup>f";
+    document.querySelectorAll("*[data-secondf]").forEach(elem => {
+        if (secondf) {
+            let s = attribute(elem, "data-secondf").split(" ")[1];
+            elem.innerHTML = s;
+        }
+        else {
+            elem.innerText = attribute(elem, "data-symbol");
+        }
+    });
 }
 
 function prepare (op) {
     inputStage = 2;
     operand1 = +(mainText());
     operation = op;
-    secondaryText(`${operand1} ${operationSymbols[operation]}`);
+    let text = "";
+    if (operation.isPrefix) {text += operation.symbol + " ";}
+    text += operand1 + " ";
+    if (!operation.isPrefix) {text += operation.symbol + " ";}
+    secondaryText(text);
     mainText("0");
-    lastFunc = "prepare";
+    if (operation.arity == 1) {calculate();}
 }
 
 function calculate (extras = {}) {
-    if (operation == undefined && operand1 == undefined) {
-        console.debug(new Error("operand1 && operation are undefined."));
-        return;
+    // Repeat mechanism
+    // inputStage is only set to 1 after input, 
+    // therefore, if it is instead 0, that means that we have just returned from calculate.
+    if (inputStage === 0) {
+        operand1 = +(mainText());
     }
-    if (inputStage !== 1) {
+    else {
         operand2 = +(mainText());
     }
-    if (extras.percentage) {
-        extras.ogo2 = operand2; // "ogo2" = original operand2
-        operand2 = operand1 * (operand2 / 1000);
+
+    // if (extras.percentage) {
+    //     extras.ogo2 = operand2; // "ogo2" = original operand2
+    //     operand2 = operand1 * (operand2 / 100);
+    // }
+
+    let operand2 = undefined;
+    if (operation.length === 2) {
+        if (extras.percentage) {
+            
+        }
     }
-    let result;
-    switch (operation) {
-        case "add": result = operand1 + operand2; break;
-        case "subtract": result = operand1 - operand2; break;
-        case "multiply": result = operand1 * operand2; break;
-        case "divide": 
-            if (operand2 == 0) {
-                mainText("undefined");
-                operation = undefined;
-                blankFlag = true;
-                return;
-            }
-            result = operand1 / operand2; 
-            break;
-        default:
-            console.warn(new Error("Unknown operation " + operation));
-    }
+    let text = operation.format(operand1, operand2);
+    let result = operation(operand1, operand2);
     result = round(result, 12);
-    secondaryText(`${operand1} ${operationSymbols[operation]} ${extras.percentage ? extras.ogo2 + "%" : operand2}`);
     mainText(result);
-    operand1 = result;
-    inputStage = 1;
-    blankFlag = true;
-    lastFunc = "calculator";
+    secondaryText(text);
+    if (operation.name == "divide" && operand2 == 0) {
+        mainText("undefined");
+        operation = undefined;
+    }
+    inputStage = 0;
+    oninput = blankDisplay;
 }
 
-// Event handlers
+// § Event handlers
+
 //   Handle onscreen button input
 document.querySelectorAll(".calc-button").forEach(button => {
     if (button.classList.contains("digit")) {
-        button.addEventListener("click", event => {
-            inputDigit(+event.target.name);
-        });
+        button.onclick = event => {
+            input(+event.target.name);
+        };
+        return;
     }
-    else {
-        let handler;
-        switch (button.id) {
-            case "add": 
-            case "subtract": 
-            case "multiply": 
-            case "divide": 
-                handler = () => {prepare(button.id)};
-                break;
-            case "percentage":
-                handler = () => {
-                    if (inputStage === 1) {
-                        mainText(mainText() / 100);
-                    }
-                    else if (inputStage === 2) { // (inputStage === 1)
-                        calculate({percentage: true});
-                    }
-                };
-                break;
-            case "decimal":
-                handler = inputDecimal;
-                break;
-            case "clear-display":
-                handler = clear;
-                break;
-            case "correction":
-                handler = () => {
-                    blankDisplay(true, false);
-                };
-                break;
-            case "result":
-                handler = calculate;
-                break;
-                break;
-            case "memory-add":
-                handler = memory.add;
-                break;
-            case "memory-recall":
-                handler = memory.recall;
-                break;
-            case "memory-clear":
-                handler = memory.clear;
-                break;
-        }
-        button.addEventListener("click", handler);
+    let handler;
+    switch (button.id) {
+        case "add": 
+        case "subtract": 
+            handler = () => {prepare(Operation.resolve(button.id))};
+            break;
+        case "divide": 
+        case "multiply": 
+            handler = () => {
+                let second = attribute(button, "data-secondf")?.split(" ")[0];
+                prepare(secondf ? Operation.resolve(second) : Operation.resolve(button.id));
+            };
+            break;
+        case "percentage":
+            handler = () => {
+                if (inputStage === 1) {
+                    prepare(Operation.resolve("hundredth"));
+                }
+                if (inputStage === 2) {
+                    calculate({percentage: true});
+                }
+            };
+            break;
+        case "correction":
+            handler = () => {blankDisplay(true, false);};
+            break;
+        case "decimal":
+            handler = () => {
+                secondf ? prepare(Operation.resolve("scientific")) : input('.');
+            };
+            break;
+        case "clear-all":
+            handler = clear; break;
+        case "result":
+            handler = calculate; break;
+        case "memory-add":
+            handler = memory.add; break;
+        case "memory-recall":
+            handler = memory.recall; break;
+        case "memory-clear":
+            handler = memory.clear; break;
+        case "second-function":
+            handler = set2ndf; break;
+        default:
+            console.warn("No handler for \"" + button.id + "\"");
     }
+    button.addEventListener("click", handler);
 });
 
 //  Handle physical keyboard input
@@ -265,15 +317,16 @@ document.addEventListener("keydown", (event) => {
     if (key === "m") {
         mDown = true;
     }
-    console.debug({"event": event, "key": key, "mDown": mDown});
+
     // if key is digit
     if (+key || key === "0") {
         document.getElementById(`digit-${key}`).click();
     }
     else if (key === "x") {
-        document.getElementById("clear-display").click();
+        document.getElementById("clear-all").click();
     }
-    else if (key === "/" || key == "\\") {
+    else if (key === "/") {
+        event.preventDefault();
         document.getElementById("divide").click();
     }
     else if (key === "*") {
@@ -297,6 +350,7 @@ document.addEventListener("keydown", (event) => {
         document.getElementById("result").click();
     }
     else if (key === "Backspace") {
+        event.preventDefault();
         backspace();
     }
     else if (key == "r" && mDown) {
@@ -307,7 +361,7 @@ document.addEventListener("keydown", (event) => {
             document.getElementById("memory-clear").click();
         }
         else {
-            document.getElementById("clear-display").click();
+            document.getElementById("clear-all").click();
         }
     }
 });

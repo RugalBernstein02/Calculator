@@ -47,7 +47,7 @@ Press `M+` again, to add that number to memory again:
 
 #### Recall from memory
 To use the saved value in a calculation, press `MR`.
-For example, to calculate the circumference of a circle with radius 5 m, multiply it by 2π, whose value is saved in memory. This is done as follows:
+For example, to calculate the circumference of a circle with radius 5 m, multiply it by 2π, whose value is saved in memory. This is done like this:
 1. Input `5` `✕`, then press `MR`. The top of the display will briefly show `M = `.
 
 <img src="images/memory-3.png" width="50%">
