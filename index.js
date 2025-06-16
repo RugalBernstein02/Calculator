@@ -77,7 +77,7 @@ const operations = [
     new Operation("multiply", '\U00D7', (a, b) => (a * b)), 
     new Operation("divide", '÷', (a, b) => (a / b)),
     new Operation("hundredth", '%', (a) => (a / 100)),
-    new Operation("square", '²', (a) => (a ** 2)),
+    new Operation("square", '²', (a) => (a ** 2), ["nonspaced"]),
     new Operation("square-root", '√', (a) => (a ** 0.5), ["prefix", "nonspaced"]),
     new Operation("power", "^", (a, b) => (a ** b)),
     new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), ["nonspaced"]),
@@ -268,8 +268,6 @@ document.querySelectorAll(".calc-button").forEach(button => {
     switch (button.id) {
         case "add": 
         case "subtract": 
-            handler = () => {prepare(Operation.search(button.id))};
-            break;
         case "divide": 
         case "multiply": 
             handler = () => {

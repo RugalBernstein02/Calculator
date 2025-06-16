@@ -1,6 +1,6 @@
 # Calculator
 ## About
-This webpage was created as part of my work for the FNB App Academy program. This is a basic calculator meant to learn, practice and demonstrate JavaScript skills, but also includes basic HTML and CSS.
+This webpage was created as part of my work for the FNB App Academy program. This is a basic calculator made to learn, practice and demonstrate my JavaScript skills, but also includes HTML and CSS.
 
 ## Special features
 ### Clear
@@ -32,36 +32,7 @@ You can add or subtract percentages of numbers by typing the first number, then 
 <img src="images/percentage-mode2-1.png" width="50%">
 
 ### Memory
-A number can be saved to memory to be reused at a later time. 
-#### Add to memory
-Let's save the number `3.141592654` (the value of pi).
-Input `3` `.` `1` `4` `1` `5` `9` `2` `6` `5` `4`, then press `M+`.
-
-<img src="images/memory-1.png" width="50%">
-
-Note that the "M" status light (circled above) turns green, to indicate that a non-zero value is stored in memory.
-
-Press `M+` again, to add that number to memory again:
-
-<img src="images/memory-2.png" width="50%">
-
-#### Recall from memory
-To use the saved value in a calculation, press `MR`.
-For example, to calculate the circumference of a circle with radius 5 m, multiply it by 2π, whose value is saved in memory. This is done like this:
-1. Input `5` `✕`, then press `MR`. The top of the display will briefly show `M = `.
-
-<img src="images/memory-3.png" width="50%">
-
-It will then change to show the calculation in progress.
-
-<img src="images/memory-4.png" width="50%">
-
-2. Press `=`. The result, 31.41592654 m, is the circumference.
-
-<img src="images/memory-5.png" width="50%">
-
-#### Clear memory
-When you have a number, saved in memory, press `MC` to clear it. The "M" status light turns white to indicate the absence of a value.
+A number can be saved to memory to be reused at a later time. Only one number can be stored at a time. Use `M+` to store a number, or to add to the number already in memory, `MR` to recall the stored number for using in calculations, and MC to clear the memory. The 'M' in the top-left corner turns green when a number is saved, and is white if there is no number in memory.
 
 ### Keyboard input
 If you're using a physical keyboard, you can type instead of pressing onscreen keys. These are the set key bindings.
