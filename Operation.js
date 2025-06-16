@@ -5,11 +5,10 @@ function parseExtras (extras) {
     if (!extras) {return {};}
     const capitalize = x => x[0].toUpperCase().concat(x.slice(1));
     const keys = ["prefix", "nonSpaced"];
+    let isArray = Array.isArray(extras);
     const result = {};
     for (let key of keys) {
-        if (Array.isArray(extras) ? extras.includes("prefix") : Boolean(extras[key])) {
-            result["is" + capitalize(key)] = true;
-        }
+        result["is" + capitalize(key)] = isArray ? extras.includes(key) : Boolean(extras[key]);
     }
     return result;
 }
@@ -65,9 +64,14 @@ let Operation = class Operation extends Function {
         if (args.length > this.length) {
             args = args.slice(0, this.length);
         }
-        // Prefix operators are always unary
-        if (this.isPrefix) {
-            return `${this.symbol}${args[0]}`;
+        // Special-case unary operations
+        if (this.length === 1) {
+            if (this.isPrefix) {
+                return `${this.symbol}${this.isNonSpaced ? "" : " "}${args[0]}`;
+            }
+            else {
+                return `${args[0]}${this.isNonSpaced ? "" : " "}${this.symbol}`;
+            }
         }
         let joiner = this.isNonSpaced ? this.symbol : " " + this.symbol + " ";
         return args.join(joiner);

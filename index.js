@@ -49,15 +49,11 @@ function attribute (elem, attr, value) {
 
 /** A function which does nothing. Used as a default or substitute value where a function is required. */
 const NO_OP = () => {};
-/** The first operand supplied to a binary operation. */
-let operand1,
-/** The second operand supplied to a binary operation. */
-operand2,
 /** The operands which will be supplied to a operation. */
-operands = [],
+let operands = [],
 /** The queued operation to perform when the result is requested. */
 operation = Operation.empty,
-/** The value representing whether the "m" key is being pressed/held, used to make the multi-key feature work. */
+/** True if the "m" key is being pressed/held, used to make the memory keys work. */
 mDown = false,
 /** `true` if second function mode is enabled */
 secondf = false,
@@ -78,12 +74,12 @@ const operations = [
     // U+00D7 = "×" MULTIPLICATION SIGN
     new Operation("multiply", '\u00D7', (a, b) => (a * b)), 
     new Operation("divide", '÷', (a, b) => (a / b)),
-    new Operation("hundredth", '%', (a) => (a / 100)),
-    new Operation("square", '²', (a) => (a ** 2), ["nonspaced"]),
-    new Operation("square-root", '√', (a) => (a ** 0.5), ["prefix", "nonspaced"]),
+    new Operation("hundredth", '%', (a) => (a / 100), ["nonSpaced"]),
+    new Operation("square", '²', (a) => (a ** 2), ["nonSpaced"]),
+    new Operation("square-root", '√', (a) => (a ** 0.5), ["prefix", "nonSpaced"]),
     new Operation("power", "^", (a, b) => (a ** b)),
-    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), ["nonspaced"]),
-    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), ["nonspaced"]),
+    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), ["nonSpaced"]),
+    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), ["nonSpaced"]),
 ]
 
 /** Find a operation in the `operations` array by index in the array, name or symbol.
@@ -160,7 +156,7 @@ function input (char) {
         mainText(0);
     }
     if (mainText() === "0") {
-        mainText(char);
+        mainText((char === "." ? "0" : "") + char);
     }
     else {
         mainText(mainText().concat(char));
@@ -233,7 +229,6 @@ function calculate (extras = {}) {
         operands[1] = operands[0] * (operands[1] / 100);
     }
     
-    // TODO Move operands to top
     operands.length = operation.length;
     let result = operation.apply(operation, operands);
     result = round(result, 12);

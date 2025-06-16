@@ -87,7 +87,7 @@ body > * {
     background-image: linear-gradient(white, #44a);
 }
 
-.calc-button:not(.top-row) {
+.calc-button:not(#top-row > *) {
     margin: 2%;
 }
 
@@ -95,11 +95,11 @@ body > * {
     background-image: linear-gradient(white, #77f);
 }
 
-.top-row.more  {
+#top-row > .more  {
     background-image: linear-gradient(white, #640);
 }
 
-.top-row.memory {
+#top-row > .memory {
     background-image: linear-gradient(white, #cb0);
 }
 
@@ -111,7 +111,7 @@ body > * {
     background-image: linear-gradient(white, #f70, #f00);
 }
 
-button.top-row {
+#top-row > button {
     width: 10%;
     font-size: 4vmin;
 }
@@ -123,7 +123,7 @@ button.top-row {
 }
 
 /* Sub-containers */
-#top-button-subcontainer {
+#top-row {
     grid-column: 1 / -1;
     display: flex;
     flex-direction: row;
@@ -131,7 +131,7 @@ button.top-row {
     flex-shrink: 2;
 }
 
-#top-button-subcontainer > button {
+#top-row > button {
     margin: 0.5%;
 }
 
@@ -143,6 +143,13 @@ button.top-row {
     grid-row: 2 / -2;
 }
 
+/* Effect on click */
 .calc-button:active {
-    box-shadow: 1px 1px 2vw 0 red;
+    border-width: 5px;
+    border-style: solid;
 }
+.calc-button.basic-operation:active { border-color: #007; }
+.calc-button.digit:active { border-color: #466; }
+.calc-button.more:active { border-color: #420; }
+.calc-button.memory:active { border-color: #660; }
+.calc-button.clear:active { border-color: #600; }
