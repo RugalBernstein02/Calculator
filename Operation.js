@@ -43,10 +43,18 @@ let Operation = class Operation extends Function {
             }
         });
     }
-    /** Create a string which represents the application of this operator on the given operands.  
-      * Examples:  
-      * `add.format(2, 3)` => "2 + 3"  
-      * `squareRoot.format(6)` => "√6"
+    /** Create a string which represents the application of this operator on the given operands.
+      * If too few operands are supplied, the remaining operands will default to `""`. 
+      * 
+      * @example
+      * multiply.format(2, 3)
+      * >> "2 × 3"  
+      * squareRoot.format(6)
+      * >> "√6"
+      * add.format(4)
+      * >> " + "
+      * 
+      * @param {number[]} args - the operands for this operation
       */
     format (...args) {
         if (args.length < this.length) {
@@ -62,20 +70,13 @@ let Operation = class Operation extends Function {
         let joiner = this.isNonSpaced ? this.symbol : " " + this.symbol + " ";
         return args.join(joiner);
     }
+
     toString() {
         return `(Operation) ${this.name} (${Array(this.arity).fill().map((_x, i) => String.fromCodePoint(i + 97)).join(" " + this.symbol + " ")})`;
     }
     /** An operation which does nothing. Used as a default or substitute value where a operation is required. */
     static empty = new Operation("empty", "␀", () => {});
 }
-
-// Make Operation.empty read-only
-Object.defineProperty(Operation, "empty", {
-    value: Operation.empty,
-    writable: false,
-    enumerable: false,
-    configurable: false,
-});
 
 // export {Operation};
 Object.defineProperty(globalThis, "Operation", {

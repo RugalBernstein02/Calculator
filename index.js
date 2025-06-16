@@ -73,7 +73,8 @@ inputStage = 0;
 const operations = [
     new Operation("add", '+', (a, b) => (a + b)),
     new Operation("subtract", '-', (a, b) => (a - b)),
-    new Operation("multiply", '×', (a, b) => (a * b)),
+    // U+00D7 = "×" MULTIPLICATION SIGN
+    new Operation("multiply", '\U00D7', (a, b) => (a * b)), 
     new Operation("divide", '÷', (a, b) => (a / b)),
     new Operation("hundredth", '%', (a) => (a / 100)),
     new Operation("square", '²', (a) => (a ** 2)),
@@ -87,7 +88,7 @@ const operations = [
  *  @param {string} searchKey - The string to search for
  *  @returns {Operation} the Operation whose index, name or symbol is the same as `searchKey`
  */
-Operation.resolve = function (searchKey) {
+Operation.search = function (searchKey) {
     if (searchKey in operations) {return operations[searchKey];}
     else {
         for (let operation of operations) {
@@ -228,19 +229,22 @@ function calculate (extras = {}) {
         operand2 = +(mainText());
     }
 
-    if (operation.length >= 2) {
-        if (extras.percentage) {
-            extras.ogo2 = operand2; // "ogo2" = original operand2
-            operand2 = operand1 * (operand2 / 100);
-        }
-    }
-    else {
+    if (operation.length < 2) {
         operand2 = undefined;
     }
-    let text = operation.format(operand1, operand2);
+    if (extras.percentage) {
+        extras.ogo2 = operand2; // "ogo2" = original operand2
+        operand2 = operand1 * (operand2 / 100);
+    }
+    
     let result = operation(operand1, operand2);
     result = round(result, 12);
     mainText(result);
+
+    if (extras.percentage) {
+        operand2 = extras.ogo2 + "%";
+    }
+    let text = operation.format(operand1, operand2);
     secondaryText(text);
     if (operation.name == "divide" && operand2 == 0) {
         mainText("undefined");
@@ -264,19 +268,19 @@ document.querySelectorAll(".calc-button").forEach(button => {
     switch (button.id) {
         case "add": 
         case "subtract": 
-            handler = () => {prepare(Operation.resolve(button.id))};
+            handler = () => {prepare(Operation.search(button.id))};
             break;
         case "divide": 
         case "multiply": 
             handler = () => {
                 let second = attribute(button, "data-secondf")?.split(" ")[0];
-                prepare(secondf ? Operation.resolve(second) : Operation.resolve(button.id));
+                prepare(secondf ? Operation.search(second) : Operation.search(button.id));
             };
             break;
         case "percentage":
             handler = () => {
                 if (inputStage === 1) {
-                    prepare(Operation.resolve("hundredth"));
+                    prepare(Operation.search("hundredth"));
                 }
                 if (inputStage === 2) {
                     calculate({percentage: true});
@@ -288,7 +292,7 @@ document.querySelectorAll(".calc-button").forEach(button => {
             break;
         case "decimal":
             handler = () => {
-                secondf ? prepare(Operation.resolve("scientific")) : input('.');
+                secondf ? prepare(Operation.search("scientific")) : input('.');
             };
             break;
         case "clear-all":
