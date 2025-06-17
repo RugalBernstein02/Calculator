@@ -59,6 +59,7 @@ let Operation = class Operation extends Function {
       */
     format (...args) {
         if (args.length < this.length) {
+            args.length = this.length;
             args = args.fill("", args.length, this.length - 1);
         }
         if (args.length > this.length) {
