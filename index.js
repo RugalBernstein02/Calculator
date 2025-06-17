@@ -52,15 +52,17 @@ let operands = [],
 operation = Operation.empty,
 /** True if the "m" key is being pressed/held, used to make the memory keys work. */
 mDown = false,
-/** `true` if second function mode is enabled */
+/** `true` if second function mode is enabled. 
+ *  2ndf mode allows the user to toggle between two set of functions on the same key 
+ *  (much like the Shift key toggles between two sets of characters). */
 secondf = false,
 /** The function to call the next time something is entered */
 oninput = NO_OP,
 /** The current stage of input. 
-Inputting data is divided into three stages, for inputting each operand. The value of this variable is:
-0 if no data has been entered yet,  
-1 if the user is entering the first operand, and  
-2 if the user is entering the second operand. */
+Inputting data is divided into three stages, for inputting each operand. The value of this variable is   
+- 0 if no data has been entered yet,  
+- 1 if the user is entering the first operand, and  
+- 2 if the user is entering the second operand. */
 inputStage = 0,
 /** The container which holds buttons for extra buttons like sin, floor and ln. */
 moreDialog = document.querySelector("#more-dialog"),
@@ -84,7 +86,7 @@ const operations = [
 ]
 
 /** Find a operation in the `operations` array by index in the array, name or symbol.
- *  @param {string} searchKey - The string to search for
+ *  @param {number | string} searchKey - The string to search for
  *  @returns {Operation} the Operation whose index, name or symbol is the same as `searchKey`
  */
 Operation.search = function (searchKey) {
@@ -207,10 +209,7 @@ function prepare (op) {
     inputStage = 2;
     operands[0] = +(mainText());
     operation = op;
-    let text = "";
-    if (operation.isPrefix) {text += operation.symbol + " ";}
-    text += operands[0] + " ";
-    if (!operation.isPrefix) {text += operation.symbol + " ";}
+    let text = operation.format(operands);
     secondaryText(text);
     mainText("0");
     if (operation.length == 1) {calculate();}
@@ -250,7 +249,7 @@ function calculate (extras = {}) {
 
 // § Event handlers
 
-//   Handle onscreen button input
+//  Handle onscreen button input
 document.querySelectorAll(".calc-button").forEach(button => {
     if (button.classList.contains("digit")) {
         button.onclick = event => {
@@ -271,10 +270,13 @@ document.querySelectorAll(".calc-button").forEach(button => {
             break;
         case "percentage":
             handler = () => {
-                if (inputStage === 1) {
+                if (secondf) {
+                    prepare(Operation.search("scientific"));
+                }
+                else if (inputStage === 1) {
                     prepare(Operation.search("hundredth"));
                 }
-                if (inputStage === 2) {
+                else if (inputStage === 2) {
                     calculate({percentage: true});
                 }
             };
