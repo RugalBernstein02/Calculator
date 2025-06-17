@@ -206,26 +206,30 @@ function set2ndf (enabled) {
 }
 
 function prepare (op) {
-    inputStage = 2;
-    operands[0] = +(mainText());
     operation = op;
-    let text = operation.format(operands);
+    operands[0] = +(mainText());
+    operands.length = 1;
+    operands.length = 2;
+    let text = operation.format(...operands);
     secondaryText(text);
     mainText("0");
-    if (operation.length == 1) {calculate();}
+    if (operation.length == 1) {
+        calculate();
+    }
+    else {
+        inputStage = 2;
+    }
 }
 
 function calculate (extras = {}) {
     // Repeat mechanism
-    // inputStage is only set to 1 after input, 
-    // therefore, if it is instead 0, that means that we have just returned from calculate.
-    operands[inputStage === 0 ? 0 : 1] = +(mainText()); 
+    operands[inputStage === 0 ? 0 : 1] = +(mainText());
 
-    if (operation.length < 2) {
-        operands[1] = undefined;
-    }
+    operands.length = operation.length;
+    
     if (extras.percentage) {
-        extras.ogo2 = operands[1]; // "ogo2" = original operand2
+        // "ogo2" = original operand2
+        extras.ogo2 = operands[1];
         operands[1] = operands[0] * (operands[1] / 100);
     }
     

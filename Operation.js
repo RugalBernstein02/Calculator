@@ -13,6 +13,15 @@ function parseExtras (extras) {
     return result;
 }
 
+/**
+ * An Operation represents a function which accepts one or more numbers (known as operands) and transforms them according to some well-defined rule.
+ * The Operation class provides an extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
+ * @example
+ * add = new Operation("add", "+", (a, b) => a + b)
+ * add(2, 3)
+ * >> 5
+
+ */
 let Operation = class Operation extends Function {
     #name; #func;
     /** True if this operator should be formatted as a prefix operator. 
@@ -21,6 +30,16 @@ let Operation = class Operation extends Function {
      isPrefix;
      /** True if this operator should be formatted without spaces around it. e.g "3√2" instead of "3 √ 2". */
     isNonSpaced;
+    /**
+     * @param {string} name - The name of this operation
+     * @param {string} symbol - The symbol which represents this operation
+     * @param {(...operands: number[]) => number} func - The function to call when this operation is called. Must be a pure function.
+     * @param {string[] | {prefix?: true, nonSpaced?: true}} extras - Any extra options to add for changing how this operation is formatted. 
+     * An option is considered to be enabled if it is included in `extras` (if `extras` is an array) or if the value associated with that option's key evaluates to `true` (if `extras` is an Object)
+     * @see Operation.isPrefix
+     * @see Operation.isNonSpaced
+     * @returns A new Operation.
+     */
     constructor(name, symbol, func, extras) {
         super(func);
         this.#name = name;
@@ -60,7 +79,6 @@ let Operation = class Operation extends Function {
     format (...args) {
         if (args.length < this.length) {
             args.length = this.length;
-            args = args.fill("", args.length, this.length - 1);
         }
         if (args.length > this.length) {
             args = args.slice(0, this.length);
