@@ -305,6 +305,12 @@ document.querySelectorAll(".calc-button").forEach(button => {
                 moreDialog.style.display = "grid"; 
             };
             break;
+        case "return":
+            handler = () => {
+                buttonContainer.style.display = "grid";
+                moreDialog.style.display = "none"; 
+            };
+            break;
         default:
             console.warn("No handler for \"" + button.id + "\"");
     }

@@ -1,11 +1,11 @@
 /* Document root */
 
 body {
-    margin: 0;
     font-family: sans-serif;
     background-color: lightgrey;
     display: flex;
     flex-direction: column;
+    margin: 0;
     padding: 1%;
     width: 100vw;
     height: 100vh;
@@ -13,7 +13,6 @@ body {
 }
 
 body > * {
-    z-index: 0;
     margin-bottom: 1%;
 }
 
@@ -84,11 +83,8 @@ body > * {
     font-size: 3rem;
     flex-shrink: 2;
     flex-grow: 1;
+    border: 1px solid grey;
     background-image: linear-gradient(white, #44a);
-}
-
-.calc-button:not(#top-row > *) {
-    margin: 2%;
 }
 
 .calc-button.digit {
@@ -132,7 +128,7 @@ body > * {
 }
 
 #top-row > button {
-    margin: 0.5%;
+    margin: 0.25%;
 }
 
 #basic-operations {
@@ -154,28 +150,20 @@ body > * {
 .calc-button.memory:active { border-color: #660; }
 .calc-button.clear:active { border-color: #600; }
 
-/* Popouts and dialogs */
+/* #more-dialog */
+
 #more-dialog {
     border: 1px solid black;
-    z-index: 1;
     display: none;
+    align-items: center;
     flex-grow: 2;
     background-color: darkgray;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: 1em 1fr 1fr 1em 1fr;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
 }
 
-.category-box {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid white;
-}
-.category-header {
-    text-align: center;
-    font-weight: bold;
-}
-.category-body {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 2;
+#more-dialog > button {
+    height: 96%;
+    margin: 1% 0.5vmin;
+    box-sizing: border-box;
 }
