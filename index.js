@@ -196,7 +196,7 @@ function set2ndf (enabled) {
     document.querySelector("#second-function").innerHTML = secondf ? "basic" : "2<sup>nd</sup>f";
     document.querySelectorAll("*[data-secondf]").forEach(elem => {
         if (secondf) {
-            let s = attribute(elem, "data-secondf").split(" ")[1];
+            let s = attribute(elem, "data-secondf").split(/(?<!\\) /)[1];
             elem.innerHTML = s;
         }
         else {
