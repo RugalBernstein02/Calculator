@@ -1,38 +1,57 @@
-// Mateo Joubert
+// by Mateo Joubert
 "use strict";
 
 function parseExtras (extras) {
     if (!extras) {return {};}
     const capitalize = x => x[0].toUpperCase().concat(x.slice(1));
-    const keys = ["prefix", "nonSpaced"];
-    let isArray = Array.isArray(extras);
+    const options = [
+        "(boolean) prefix",
+        "(boolean) nonSpaced",
+        "(string) leftRight",
+    ];
     const result = {};
-    for (let key of keys) {
-        result["is" + capitalize(key)] = isArray ? extras.includes(key) : Boolean(extras[key]);
+    for (let option of options) {
+        let type = option.match(/(?<=\()[a-z]+(?=\))/)[0];
+        let name = option.match(/[a-zA-Z]+$/)[0];
+        switch (typeof option) {
+            case "boolean":
+                result["is" + capitalize(name)] = Boolean(extras[name]);
+            case "string":
+                let s = String(extras[name]);
+                if (s.length === 3) {
+                    result[name] = s;
+                }
+        }
     }
     return result;
 }
 
 /**
- * An Operation represents a function which accepts one or more numbers (known as operands) and transforms them according to some well-defined rule.
+ * An Operation represents a function which accepts one or more numbers (operands) and transforms them according to some well-defined rule.
  * The Operation class provides an easily extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
  */
 let Operation = class Operation extends Function {
     #name; #func;
-    /** True if this operator should be formatted as a prefix operator. 
-      * Prefix operators appear before their operands e.g. "-6" and "√2". 
-      * Only unary operators can be prefix. */
-     isPrefix;
-     /** True if this operator should be formatted without spaces around it. e.g "3√2" instead of "3 √ 2". */
-    isNonSpaced;
+    /****Unary operators only:**
+     * True if this operator should be formatted as a prefix operator. 
+     * Prefix operators appear before their operands e.g. "-6" and "√2".  */
+    isPrefix = false;
+    /** **Unary operators only:** The characters to surround the operand with, separated by a space.  
+     *  For example, suppose `o` is an operation whose `leftRight` option is `"\ /"`. Calling `o.format(42)` results in `\42/`.  
+     *  `leftRight` must consist of two groups of characters separated by one space.
+     *  In other words, it must be of the form /`.* .*`/  
+     *  `leftRight` cannot be used with `prefix`; if both are enabled, `leftRight` will take precedence.*/
+    leftRight = "";
+    /** True if this operator should be formatted without spaces around it e.g "3√2" instead of "3 √ 2". */
+    isNonSpaced = false;
     /**
      * @param {string} name - The name of this operation
      * @param {string} symbol - The symbol which represents this operation
      * @param {(...operands: number[]) => number} func - The function to call when this operation is called. Must be a pure function.
-     * @param {string[] | {prefix?: true, nonSpaced?: true}} extras - Any extra options to add for changing how this operation is formatted. 
-     * An option is considered to be enabled if it is included in `extras` (if `extras` is an array) or if the value associated with that option's key evaluates to `true` (if `extras` is an Object)
+     * @param {{prefix?: true, nonSpaced?: true, leftRight?: string}} extras - Any extra options to add for changing how this operation is formatted. 
      * @see Operation.isPrefix
      * @see Operation.isNonSpaced
+     * @see Operation.leftRight
      * @returns A new Operation.
      */
     constructor(name, symbol, func, extras) {
@@ -78,9 +97,17 @@ let Operation = class Operation extends Function {
         if (args.length > this.length) {
             args = args.slice(0, this.length);
         }
-        // Special-case unary operations
+        // Special cases for unary operations
         if (this.length === 1) {
-            if (this.isPrefix) {
+            if (this.leftRight) {
+                let leftRight = this.leftRight.split(" ");
+                return leftRight[0] +
+                    (this.isNonSpaced ? "" : " ") +
+                    args[0] +
+                    (this.isNonSpaced ? "" : " ") +
+                    leftRight[1];
+            }
+            else if (this.isPrefix) {
                 return `${this.symbol}${this.isNonSpaced ? "" : " "}${args[0]}`;
             }
             else {

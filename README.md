@@ -4,11 +4,7 @@ This webpage was created as part of my work for the FNB App Academy program. Thi
 
 ## Special features
 ### Clear
-When you make a mistake or want to abort the current calculation, you can use the `C` and `AC` buttons. Press `C` to clear the display, but keep the current calculation. Press `AC` to clear everything and return to the initial state. To see this in action, try the following:
-1. Input `1` `+` `2`, but don't press `=`.
-2. Now press `C`. The input changes to "0", but the text above it remains "1 + ".
-3. Press `3`, then `=`. The result of "1 + 3" is "4".
-4. Press `AC`. This clears everything on the screen.
+When you make a mistake or want to abort the current calculation, you can use the `C` and `AC` buttons. Press `C` to clear the display, but keep the current calculation. Press `AC` to clear everything and return to the initial state.
 
 ### Repeat
 When you have done a calculation, you may press the `=` key to perform the same operation again on the result. For example, to multiply by 3 repeatedly: 

@@ -71,18 +71,22 @@ buttonContainer = document.querySelector("#button-container");
 
 // § Operations
 
+/** The list of operations supported by this calculator. */
 const operations = [
     new Operation("add", '+', (a, b) => (a + b)),
     new Operation("subtract", '-', (a, b) => (a - b)),
     // U+00D7 = "×" MULTIPLICATION SIGN
     new Operation("multiply", '\u00D7', (a, b) => (a * b)), 
     new Operation("divide", '÷', (a, b) => (a / b)),
-    new Operation("hundredth", '%', (a) => (a / 100), ["nonSpaced"]),
-    new Operation("square", '²', (a) => (a ** 2), ["nonSpaced"]),
-    new Operation("square-root", '√', (a) => (a ** 0.5), ["prefix", "nonSpaced"]),
+    new Operation("hundredth", '%', (a) => (a / 100), {"nonSpaced": true}),
+    new Operation("square", '²', (a) => (a ** 2), {"nonSpaced": true}),
+    new Operation("square-root", '√', (a) => (a ** 0.5), {"prefix": true, "nonSpaced": true}),
     new Operation("power", "^", (a, b) => (a ** b)),
-    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), ["nonSpaced"]),
-    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), ["nonSpaced"]),
+    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), {"nonSpaced": true}),
+    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), {"nonSpaced": true}),
+    new Operation("round", '⌈ ⌋', (a) => Math.round(a), {"nonSpaced": true, "leftRight": "⌈ ⌋"}),
+    new Operation("floor", '⌊ ⌋', (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌊ ⌋"}),
+    new Operation("ceiling", '⌈ ⌉', (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌈ ⌉"}),
 ]
 
 /** Find a operation in the `operations` array by index in the array, name or symbol.
@@ -103,17 +107,37 @@ Operation.search = function (searchKey) {
 
 // § Main logic
 
+function mainText (value) {
+    const result = innerText("main-display", value);
+    // fitMain.fit();
+    return result;
+}
+function secondaryText (value) {return innerText("secondary-display", value);}
+
+/**
+ * Briefly show a value on the main display and its name (such as M (for memory) or ⲡ) on the secondary display.
+ * Optionally replaces the content of the main display with `value`.
+ * @param {string} name - the name to show on the secondary display
+ * @param {number} value - the value to show on the main display
+ * @param {boolean} overwrite - true if the main display should be overwritten
+ */
+function showValue (name, value, overwrite = true, timeout = 500) {
+    let oldS = secondaryText();
+    let oldM = mainText();
+    mainText(value);
+    secondaryText(name);
+    setTimeout(() => {
+        secondaryText(oldS);
+        if (!overwrite) {
+            mainText(oldM);
+        }
+    }, timeout);
+}
+
 const memory = {
     "value": 0, // The value currently stored in memory
-    "recall": (overwriteMain = true) => { // Show the value in memory
-        let old = secondaryText();
-        secondaryText(`M = `);
-        setTimeout(() => {
-            secondaryText(old);
-        }, 500);
-        if (overwriteMain) {
-            mainText(memory.value);
-        }
+    "recall": (overwrite = true) => { // Show the value in memory
+        showValue("Memory", memory.value, overwrite);
         if (memory.value === 0) {
             memory.lcd.classList.replace("on", "off");
         }
@@ -131,13 +155,6 @@ const memory = {
     },
     "lcd": document.querySelector("#memory-lcd"),
 }
-
-function mainText (value) {
-    const result = innerText("main-display", value);
-    // fitMain.fit();
-    return result;
-}
-function secondaryText (value) {return innerText("secondary-display", value);}
 
 /** Clear the displays. To clear a display, pass `true` for the relevant argument, or `false` to preserve its current text. The default for both parameters is `true`.
  *  @param {boolean} [main = true] - whether to clear the main display
@@ -225,7 +242,7 @@ function prepare (op) {
 }
 
 function calculate (extras = {}) {
-    
+
     if (operation === Operation.empty) {
         return;
     }
@@ -326,6 +343,18 @@ document.querySelectorAll(".calc-button").forEach(button => {
                 buttonContainer.style.display = "grid";
                 moreDialog.style.display = "none"; 
             };
+            break;
+        case "pi":
+            handler = () => {showValue("π", 3.141592654, true)};
+            break;
+        case "euler":
+            // U+212F = ℯ SCRIPT SMALL LETTER E
+            handler = () => {showValue("\u212f", 2.718281828, true)};
+            break;
+        case "round":
+        case "ceiling":
+        case "floor":
+            handler = (event) => {prepare(Operation.search(event.target.id))};
             break;
         default:
             console.warn("No handler for \"" + button.id + "\"");
