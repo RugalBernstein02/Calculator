@@ -101,17 +101,19 @@ Operation.search = function (searchKey) {
     }
 }
 
-// § Basic functions for interacting with the display
+// § Main logic
 
 const memory = {
     "value": 0, // The value currently stored in memory
-    "recall": () => { // Show the value in memory
+    "recall": (overwriteMain = true) => { // Show the value in memory
         let old = secondaryText();
         secondaryText(`M = `);
         setTimeout(() => {
             secondaryText(old);
         }, 500);
-        mainText(memory.value);
+        if (overwriteMain) {
+            mainText(memory.value);
+        }
         if (memory.value === 0) {
             memory.lcd.classList.replace("on", "off");
         }
@@ -121,11 +123,11 @@ const memory = {
     }, 
     "add": () => {
         memory.value += +(mainText());
-        memory.recall();
+        memory.recall(false);
     },
     "clear": () => {
         memory.value = 0;
-        memory.recall();
+        memory.recall(false);
     },
     "lcd": document.querySelector("#memory-lcd"),
 }
@@ -193,7 +195,8 @@ function clear () {
 
 function set2ndf (enabled) {
     secondf = typeof enabled === "boolean" ? enabled : !secondf;
-    document.querySelector("#second-function").innerHTML = secondf ? "basic" : "2<sup>nd</sup>f";
+    let f = b => b ? "on" : "off";
+    document.querySelector("#second-function").classList.replace(f(!secondf), f(secondf));
     document.querySelectorAll("*[data-secondf]").forEach(elem => {
         if (secondf) {
             let s = attribute(elem, "data-secondf").split(/(?<!\\) /)[1];
@@ -222,6 +225,11 @@ function prepare (op) {
 }
 
 function calculate (extras = {}) {
+    
+    if (operation === Operation.empty) {
+        return;
+    }
+
     // Repeat mechanism
     operands[inputStage === 0 ? 0 : 1] = +(mainText());
 
@@ -247,7 +255,9 @@ function calculate (extras = {}) {
         mainText("undefined");
         operation = Operation.empty;
     }
+
     inputStage = 0;
+    set2ndf(false);
     oninput = blankDisplay;
 }
 

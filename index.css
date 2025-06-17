@@ -45,11 +45,11 @@ body > * {
     background-color: rgb(169, 169, 210);
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: left;
 }
 
-#status-bar > .fixed {
-    color: black;
+#status-bar > *:not(*:first-child) {
+    margin-left: 2%;
 }
 
 #status-bar > .on {
@@ -60,12 +60,8 @@ body > * {
     color: white;
 }
 
-#status-bar > .left {
-    justify-self: left;
-}
-
-#status-bar > .right {
-    justify-self: right;
+#secondary-display {
+    flex-grow: 1;
 }
 
 /* Buttons */

@@ -15,12 +15,7 @@ function parseExtras (extras) {
 
 /**
  * An Operation represents a function which accepts one or more numbers (known as operands) and transforms them according to some well-defined rule.
- * The Operation class provides an extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
- * @example
- * add = new Operation("add", "+", (a, b) => a + b)
- * add(2, 3)
- * >> 5
-
+ * The Operation class provides an easily extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
  */
 let Operation = class Operation extends Function {
     #name; #func;
