@@ -254,7 +254,7 @@ function calculate (extras = {}) {
 document.querySelectorAll(".calc-button").forEach(button => {
     if (button.classList.contains("digit")) {
         button.onclick = event => {
-            input(+event.target.name);
+            input(+event.target.innerText);
         };
         return;
     }
