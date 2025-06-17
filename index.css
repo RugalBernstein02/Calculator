@@ -13,6 +13,7 @@ body {
 }
 
 body > * {
+    z-index: 0;
     margin-bottom: 1%;
 }
 
@@ -83,7 +84,6 @@ body > * {
     font-size: 3rem;
     flex-shrink: 2;
     flex-grow: 1;
-    border: 1px solid grey;
     background-image: linear-gradient(white, #44a);
 }
 
@@ -95,7 +95,7 @@ body > * {
     background-image: linear-gradient(white, #77f);
 }
 
-#top-row > .more  {
+#top-row > .more, #more-dialog .more  {
     background-image: linear-gradient(white, #640);
 }
 
@@ -153,3 +153,29 @@ body > * {
 .calc-button.more:active { border-color: #420; }
 .calc-button.memory:active { border-color: #660; }
 .calc-button.clear:active { border-color: #600; }
+
+/* Popouts and dialogs */
+#more-dialog {
+    border: 1px solid black;
+    z-index: 1;
+    display: none;
+    flex-grow: 2;
+    background-color: darkgray;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 1em 1fr 1fr 1em 1fr;
+}
+
+.category-box {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+}
+.category-header {
+    text-align: center;
+    font-weight: bold;
+}
+.category-body {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+}

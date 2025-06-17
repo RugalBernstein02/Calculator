@@ -2,6 +2,8 @@
 <html>
     <head>
         <link rel="stylesheet" href="index.css">
+        <script src="fitty.min.js"></script>
+        <script src="Operation.js"></script>
     </head>
     <body>
         <div id="display-container">
@@ -14,7 +16,7 @@
         <!-- TODO: Change labels to SVG images -->
         <div id="button-container">
             <div id="top-row">
-                <button id="more-button" class="calc-button more">⚙</button>
+                <button id="more-button" class="calc-button more">…</button>
                 <button id="second-function" class="calc-button more">2<sup>nd</sup>f</button>
                 <button id="memory-add" class="calc-button memory">M+</button>
                 <button id="memory-recall" class="calc-button memory">MR</button>
@@ -42,8 +44,30 @@
             <button id="percentage" class="calc-button" data-symbol="%" data-secondf="scientific ⏨">%</button>
             <button id="result" class="calc-button">=</button>
         </div>
+        <div id="more-dialog" class="dialog">
+            <span class="category-header" style="grid-area: 1 / 1 / 2 / 3;">Return to calculator</span>
+            <button class="calc-button more more-more" style="grid-area: 2 / 1 / 4 / 3;">⛒</button>
+            <span class="category-header"style="grid-area: 1 / 3 / 2 / 5;">Constants</span>
+            <button class="calc-button more-more" id="pi" style="grid-area: 2 / 3 / 3 / 5;">π</button>
+            <button class="calc-button more-more" id="euler" style="grid-area: 3 / 3 / 4 / 5;">ℯ</button>
+            <span class="category-header"style="grid-area: 1 / 5 / 2 / 8;">Trigonometry</span>
+            <button class="calc-button more-more" id="sine" style="grid-area: 2 / 5 / 3 / 6;">sin</button>
+            <button class="calc-button more-more" id="cosine" style="grid-area: 2 / 6 / 3 / 7;">cos</button>
+            <button class="calc-button more-more" id="tangent" style="grid-area: 2 / 7 / 3 / 8;">tan</button>
+            <button class="calc-button more-more" id="hyperbolic-sine" style="grid-area: 3 / 5 / 4 / 6;">sinh</button>
+            <button class="calc-button more-more" id="hyperbolic-cosine" style="grid-area: 3 / 6 / 4 / 7;">cosh</button>
+            <button class="calc-button more-more" id="hyperbolic-tangent" style="grid-area: 3 / 7 / 4 / 8;">tanh</button>
+            <span class="category-header"style="grid-area: 4 / 1 / 5 / 4;">Rounding</span>
+            <button class="calc-button more-more" id="round" style="grid-area: 5 / 1 / 6 / 2;">⌈ ⌋</button>
+            <button class="calc-button more-more" id="floor" style="grid-area: 5 / 2 / 6 / 3;">⌊ ⌋</button>
+            <button class="calc-button more-more" id="ceiling" style="grid-area: 5 / 3 / 6 / 4;">⌈ ⌉</button>
+            <span class="category-header"style="grid-area: 4 / 4 / 5 / 7;">Logarithms</span>
+            <button class="calc-button more-more" id="log10" style="grid-area: 5 / 4 / 6 / 5;">log<sub>10</sub></button>
+            <button class="calc-button more-more" id="ln" style="grid-area: 5 / 5 / 6 / 6;">ln</button>
+            <button class="calc-button more-more" id="logb" style="grid-area: 5 / 6 / 6 / 7;">log<sub>b</sub></button>
+            <span class="category-header"style="grid-area: 4 / 7 / 5 / 8;">Settings</span>
+            <button class="calc-button more-more" id="settings" style="grid-area: 5 / 7 / 6 / 8">⚙</button>
+        </div>
     </body>
-    <script src="fitty.min.js" async="false"></script>
-    <script src="Operation.js" async="false"></script>
     <script src="index.js" async="false"></script>
 </html>

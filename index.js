@@ -1,8 +1,5 @@
 "use strict";
 
-const fitMain = fitty(document.querySelector("#main-display"));
-fitMain.freeze();
-
 // § helper functions 
 
 /** Round a number off to the given number of decimal places
@@ -64,7 +61,11 @@ Inputting data is divided into three stages, for inputting each operand. The val
 0 if no data has been entered yet,  
 1 if the user is entering the first operand, and  
 2 if the user is entering the second operand. */
-inputStage = 0;
+inputStage = 0,
+/** The container which holds buttons for extra buttons like sin, floor and ln. */
+moreDialog = document.querySelector("#more-dialog"),
+/** The container which holds buttons for basic buttons like digits, addition and clear. */
+buttonContainer = document.querySelector("#button-container");
 
 // § Operations
 
@@ -298,6 +299,12 @@ document.querySelectorAll(".calc-button").forEach(button => {
             handler = memory.clear; break;
         case "second-function":
             handler = set2ndf; break;
+        case "more-button":
+            handler = () => {
+                buttonContainer.style.display = "none";
+                moreDialog.style.display = "grid"; 
+            };
+            break;
         default:
             console.warn("No handler for \"" + button.id + "\"");
     }
