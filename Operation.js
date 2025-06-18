@@ -8,6 +8,7 @@ function parseExtras (extras) {
         "(boolean) prefix",
         "(boolean) nonSpaced",
         "(string) leftRight",
+        "(function) custom"
     ];
     const result = {};
     for (let option of options) {
@@ -17,10 +18,9 @@ function parseExtras (extras) {
             case "boolean":
                 result["is" + capitalize(name)] = Boolean(extras[name]);
             case "string":
-                let s = String(extras[name]);
-                if (s.length === 3) {
-                    result[name] = s;
-                }
+                result[name] = String(extras[name]);
+            default:
+                result[name] = extras[name];
         }
     }
     return result;
@@ -36,22 +36,27 @@ let Operation = class Operation extends Function {
      * True if this operator should be formatted as a prefix operator. 
      * Prefix operators appear before their operands e.g. "-6" and "√2".  */
     isPrefix = false;
+    /** True if this operator should be formatted without spaces around it e.g "3√2" instead of "3 √ 2". */
+    isNonSpaced = false;
     /** **Unary operators only:** The characters to surround the operand with, separated by a space.  
      *  For example, suppose `o` is an operation whose `leftRight` option is `"\ /"`. Calling `o.format(42)` results in `\42/`.  
      *  `leftRight` must consist of two groups of characters separated by one space.
      *  In other words, it must be of the form /`.* .*`/  
-     *  `leftRight` cannot be used with `prefix`; if both are enabled, `leftRight` will take precedence.*/
-    leftRight = "";
-    /** True if this operator should be formatted without spaces around it e.g "3√2" instead of "3 √ 2". */
-    isNonSpaced = false;
+     *  `leftRight` cannot be used with `prefix`; if both are enabled, `leftRight` will take precedence. */
+    leftRight;
+    /** A custom function for formatting. 
+     *  When `format` is called, it will call this function as a callback and return the result. 
+     *  No other formatting or modification will be applied. */
+    custom;
     /**
      * @param {string} name - The name of this operation
      * @param {string} symbol - The symbol which represents this operation
      * @param {(...operands: number[]) => number} func - The function to call when this operation is called. Must be a pure function.
-     * @param {{prefix?: true, nonSpaced?: true, leftRight?: string}} extras - Any extra options to add for changing how this operation is formatted. 
+     * @param {{ prefix?: true, nonSpaced?: true, leftRight?: string, custom?: (...operands: number[]) => string}} extras - Any extra options to add for changing how this operation is formatted. 
      * @see Operation.isPrefix
      * @see Operation.isNonSpaced
      * @see Operation.leftRight
+     * @see Operation.custom
      * @returns A new Operation.
      */
     constructor(name, symbol, func, extras) {
@@ -97,6 +102,11 @@ let Operation = class Operation extends Function {
         if (args.length > this.length) {
             args = args.slice(0, this.length);
         }
+
+        if (this.custom) {
+            return this.custom(...args);
+        }
+
         // Special cases for unary operations
         if (this.length === 1) {
             if (this.leftRight) {

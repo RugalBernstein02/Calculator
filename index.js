@@ -17,11 +17,11 @@ function round (x, n) {
  *  @param {string | undefined} value - the new `innerText` to assign to the element, or undefined to leave it as is
  *  @returns the `innerText` of the element before it was changed
  */
-function innerText (elem, value) {
+function innerHTML (elem, value) {
     if (!(elem instanceof HTMLElement)) {elem = document.getElementById(elem)}
-    const old = elem.innerText;
+    const old = elem.innerHTML;
     if (value != undefined) {
-        elem.innerText = value;
+        elem.innerHTML = value;
     }
     return old;
 }
@@ -73,20 +73,23 @@ buttonContainer = document.querySelector("#button-container");
 
 /** The list of operations supported by this calculator. */
 const operations = [
-    new Operation("add", '+', (a, b) => (a + b)),
-    new Operation("subtract", '-', (a, b) => (a - b)),
+    new Operation("add", "+", (a, b) => (a + b)),
+    new Operation("subtract", "-", (a, b) => (a - b)),
     // U+00D7 = "×" MULTIPLICATION SIGN
-    new Operation("multiply", '\u00D7', (a, b) => (a * b)), 
-    new Operation("divide", '÷', (a, b) => (a / b)),
-    new Operation("hundredth", '%', (a) => (a / 100), {"nonSpaced": true}),
-    new Operation("square", '²', (a) => (a ** 2), {"nonSpaced": true}),
-    new Operation("square-root", '√', (a) => (a ** 0.5), {"prefix": true, "nonSpaced": true}),
+    new Operation("multiply", "\u00D7", (a, b) => (a * b)), 
+    new Operation("divide", "÷", (a, b) => (a / b)),
+    new Operation("hundredth", "%", (a) => (a / 100), {"nonSpaced": true}),
+    new Operation("square", "²", (a) => (a ** 2), {"nonSpaced": true}),
+    new Operation("square-root", "√", (a) => (a ** 0.5), {"prefix": true, "nonSpaced": true}),
     new Operation("power", "^", (a, b) => (a ** b)),
     new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), {"nonSpaced": true}),
-    new Operation("scientific", 'E', (a, b) => (a * 10 ** b), {"nonSpaced": true}),
-    new Operation("round", '⌈ ⌋', (a) => Math.round(a), {"nonSpaced": true, "leftRight": "⌈ ⌋"}),
-    new Operation("floor", '⌊ ⌋', (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌊ ⌋"}),
-    new Operation("ceiling", '⌈ ⌉', (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌈ ⌉"}),
+    new Operation("scientific", "E", (a, b) => (a * 10 ** b), {"nonSpaced": true}),
+    new Operation("round", "⌈ ⌋", (a) => Math.round(a), {"nonSpaced": true, "leftRight": "⌈ ⌋"}),
+    new Operation("floor", "⌊ ⌋", (a) => Math.floor(a), {"nonSpaced": true, "leftRight": "⌊ ⌋"}),
+    new Operation("ceiling", "⌈ ⌉", (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌈ ⌉"}),
+    new Operation("log10", "log<sub>10</sub>", (a) => Math.log10(a), {"nonSpaced": true, "prefix": true}),
+    new Operation("ln", "log<sub>e</sub>", (a) => Math.log(a)),
+    new Operation("logb", "log<sub>b</sub>", (a, b) => (Math.log(a) / Math.log(b)), {"custom": (a, b) => `log<sub>${b}</sub>${a}`}),
 ]
 
 /** Find a operation in the `operations` array by index in the array, name or symbol.
@@ -107,12 +110,12 @@ Operation.search = function (searchKey) {
 
 // § Main logic
 
-function mainText (value) {
-    const result = innerText("main-display", value);
+function mainHTML (value) {
+    const result = innerHTML("main-display", value);
     // fitMain.fit();
     return result;
 }
-function secondaryText (value) {return innerText("secondary-display", value);}
+function secondaryHTML (value) {return innerHTML("secondary-display", value);}
 
 /**
  * Briefly show a value on the main display and its name (such as M (for memory) or ⲡ) on the secondary display.
@@ -122,14 +125,14 @@ function secondaryText (value) {return innerText("secondary-display", value);}
  * @param {boolean} overwrite - true if the main display should be overwritten
  */
 function showValue (name, value, overwrite = true, timeout = 500) {
-    let oldS = secondaryText();
-    let oldM = mainText();
-    mainText(value);
-    secondaryText(name);
+    let oldS = secondaryHTML();
+    let oldM = mainHTML();
+    mainHTML(value);
+    secondaryHTML(name);
     setTimeout(() => {
-        secondaryText(oldS);
+        secondaryHTML(oldS);
         if (!overwrite) {
-            mainText(oldM);
+            mainHTML(oldM);
         }
     }, timeout);
 }
@@ -146,7 +149,7 @@ const memory = {
         }
     }, 
     "add": () => {
-        memory.value += +(mainText());
+        memory.value += +(mainHTML());
         memory.recall(false);
     },
     "clear": () => {
@@ -162,43 +165,43 @@ const memory = {
  */
 function blankDisplay (main = true, secondary = true) {
     if (main) {
-        mainText("0");
+        mainHTML("0");
     }
     if (secondary) {
-        secondaryText("");
+        secondaryHTML("");
     }
 }
 
 function input (char) {
     oninput();
     oninput = NO_OP;
-    if (char === "." && mainText().includes(".")) {return null;}
+    if (char === "." && mainHTML().includes(".")) {return null;}
     if (inputStage === 0) {inputStage = 1;}
-    if (mainText() === "") {
-        mainText(0);
+    if (mainHTML() === "") {
+        mainHTML(0);
     }
-    if (mainText() === "0") {
-        mainText((char === "." ? "0" : "") + char);
+    if (mainHTML() === "0") {
+        mainHTML((char === "." ? "0" : "") + char);
     }
     else {
-        mainText(mainText().concat(char));
+        mainHTML(mainHTML().concat(char));
     }
 }
 
 function backspace () {
-    if (mainText().at(-2) === ".") {
-        if (mainText().length > 2) {
-            mainText(mainText().substring(0, mainText().length - 2));
+    if (mainHTML().at(-2) === ".") {
+        if (mainHTML().length > 2) {
+            mainHTML(mainHTML().substring(0, mainHTML().length - 2));
         }
         else {
-            mainText("0");
+            mainHTML("0");
         }
     }
-    else if (mainText().length > 1) {
-        mainText(mainText().substring(0, mainText().length - 1));
+    else if (mainHTML().length > 1) {
+        mainHTML(mainHTML().substring(0, mainHTML().length - 1));
     }
     else {
-        mainText("0");
+        mainHTML("0");
     }
 }
 
@@ -227,12 +230,11 @@ function set2ndf (enabled) {
 
 function prepare (op) {
     operation = op;
-    operands[0] = +(mainText());
+    operands[0] = +(mainHTML());
     operands.length = 1;
-    operands.length = 2;
     let text = operation.format(...operands);
-    secondaryText(text);
-    mainText("0");
+    secondaryHTML(text);
+    mainHTML("0");
     if (operation.length == 1) {
         calculate();
     }
@@ -248,7 +250,7 @@ function calculate (extras = {}) {
     }
 
     // Repeat mechanism
-    operands[inputStage === 0 ? 0 : 1] = +(mainText());
+    operands[inputStage === 0 ? 0 : 1] = +(mainHTML());
 
     operands.length = operation.length;
     
@@ -261,15 +263,15 @@ function calculate (extras = {}) {
     operands.length = operation.length;
     let result = operation.apply(operation, operands);
     result = round(result, 12);
-    mainText(result);
+    mainHTML(result);
 
     if (extras.percentage) {
         operands[1] = extras.ogo2 + "%";
     }
     let text = operation.format.apply(operation, operands);
-    secondaryText(text);
+    secondaryHTML(text);
     if (operation.name == "divide" && operands[1] == 0) {
-        mainText("undefined");
+        mainHTML("undefined");
         operation = Operation.empty;
     }
 
@@ -317,7 +319,7 @@ document.querySelectorAll(".calc-button").forEach(button => {
             break;
         case "decimal":
             handler = () => {
-                secondf ? prepare(Operation.search("scientific")) : input('.');
+                secondf ? prepare(Operation.search("scientific")) : input(".");
             };
             break;
         case "clear-all":
@@ -354,6 +356,9 @@ document.querySelectorAll(".calc-button").forEach(button => {
         case "round":
         case "ceiling":
         case "floor":
+        case "log10":
+        case "ln":
+        case "logb":
             handler = (event) => {prepare(Operation.search(event.target.id))};
             break;
         default:
