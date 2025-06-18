@@ -85,8 +85,8 @@ let Operation = class Operation extends Function {
         }
         let tags = result.match(/\{(sup|sub): (\{\d+\}|[^\}]*)\}/g) ?? [] // find super- and subscript references
         for (let tag of tags) {
-            let name = tag.match(/(sub|sup)/);
-            let content = tag.match(/(?<=\{(?:sub|sup): )(.*)(?=\})/);
+            let name = tag.match(/(sub|sup)/)[0];
+            let content = tag.match(/(?<=\{(?:sub|sup): )(.*)(?=\})/)[0];
             result = result.replace(tag, `<${name}>${content}</${name}>`);
         }
 
