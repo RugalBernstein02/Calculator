@@ -49,8 +49,10 @@ const NO_OP = () => {};
 /** The operands which will be supplied to a operation. */
 let operands = [],
 /** The queued operation to perform when the result is requested. */
-operation = Operation.empty,
-/** True if the "m" key is being pressed/held, used to make the memory keys work. */
+operation = Operation.identity,
+/** True if the "m" key is being pressed/held, used to make memory key combinations (e.g. M + A) work. 
+ *  See README#Keyboard Input.
+ */
 mDown = false,
 /** `true` if second function mode is enabled. 
  *  2ndf mode allows the user to toggle between two set of functions on the same key 
@@ -243,10 +245,6 @@ function prepare (op) {
 }
 
 function calculate (extras = {}) {
-
-    if (operation === Operation.empty) {
-        return;
-    }
 
     // Repeat mechanism
     operands[inputStage === 0 ? 0 : 1] = +(mainHTML());

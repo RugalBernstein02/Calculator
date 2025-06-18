@@ -20,10 +20,7 @@ When you have done a calculation, you may press the `=` key to perform the same 
 3. You can keep pressing `=` to multiply the last result by 3, yielding 54, 162, 486, and so on.
 
 ### Percentage
-#### Mode 1
-Pressing the `%` key after entering a number, but before starting a calculation divides the number by 100. For example, pressing `3` then `%` will result in `0.03`. (If this doesn't work, press Clear (`C`) first to make sure that a calculation is not in progress.)
-#### Mode 2
-You can add or subtract percentages of numbers by typing the first number, then a basic operation, then the percentage to multiply the first number by, then `=`. For example, subtracting 15% of 16.99 gives 14.4415. This can be calculated as: `1` `6` `.` `9` `9` `-` `1` `5` `%`.
+You can add or subtract percentages of numbers using the percentage operator. For example, subtracting 15% of 16.99 gives 14.4415. This can be calculated as: `1` `6` `.` `9` `9` `-` `1` `5` `%`.
 
 <img src="images/percentage-mode2-1.png" width="50%">
 
@@ -40,14 +37,14 @@ If you're using a physical keyboard, you can type instead of pressing onscreen k
 |Add			|Numpad `+`					|
 |Subtract		|`-` (Numpad or number row)	|
 |Multiply		|Numpad `*`					|
-|Divide			|`/`, numpad `/` or `\`		|
+|Divide			|`/` or numpad `/`        	|
 |Clear			|`c`						|
 |Add to memory	|Hold `m`, then press `+`	|
 |Recall memory	|Hold `m`, then press `r`	|
 |Clear memory	|Hold `m`, then press `c`	|
 |Result			|`↵`						|
 
-Additionally, keyboard users can use the `Backspace` key (not present on the onscreen keyboard) to remove one digit from the input.
+Additionally, keyboard users can use the `Backspace` key (not available on the onscreen keyboard) to remove one digit from the input.
 
 # Attribution
 This project uses the "fitty" JS module by Rik Schennink.
