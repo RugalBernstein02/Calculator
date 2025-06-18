@@ -73,23 +73,23 @@ buttonContainer = document.querySelector("#button-container");
 
 /** The list of operations supported by this calculator. */
 const operations = [
-    new Operation("add", "+", (a, b) => (a + b)),
-    new Operation("subtract", "-", (a, b) => (a - b)),
+    new Operation("add", (a, b) => (a + b), "{1} + {2}"),
+    new Operation("subtract", (a, b) => (a - b), "{1} - {2}"),
     // U+00D7 = "×" MULTIPLICATION SIGN
-    new Operation("multiply", "\u00D7", (a, b) => (a * b)), 
-    new Operation("divide", "÷", (a, b) => (a / b)),
-    new Operation("hundredth", "%", (a) => (a / 100), {"nonSpaced": true}),
-    new Operation("square", "²", (a) => (a ** 2), {"nonSpaced": true}),
-    new Operation("square-root", "√", (a) => (a ** 0.5), {"prefix": true, "nonSpaced": true}),
-    new Operation("power", "^", (a, b) => (a ** b)),
-    new Operation("nth-root", "√", (a, b) => (b ** (1 / a)), {"nonSpaced": true}),
-    new Operation("scientific", "E", (a, b) => (a * 10 ** b), {"nonSpaced": true}),
-    new Operation("round", "⌈ ⌋", (a) => Math.round(a), {"nonSpaced": true, "leftRight": "⌈ ⌋"}),
-    new Operation("floor", "⌊ ⌋", (a) => Math.floor(a), {"nonSpaced": true, "leftRight": "⌊ ⌋"}),
-    new Operation("ceiling", "⌈ ⌉", (a) => Math.ceil(a), {"nonSpaced": true, "leftRight": "⌈ ⌉"}),
-    new Operation("log10", "log<sub>10</sub>", (a) => Math.log10(a), {"nonSpaced": true, "prefix": true}),
-    new Operation("ln", "log<sub>e</sub>", (a) => Math.log(a)),
-    new Operation("logb", "log<sub>b</sub>", (a, b) => (Math.log(a) / Math.log(b)), {"custom": (a, b) => `log<sub>${b}</sub>${a}`}),
+    new Operation("multiply", (a, b) => (a * b), "{1} \u00D7 {2}"), 
+    new Operation("divide", (a, b) => (a / b), "{1} ÷ {2}"),
+    new Operation("hundredth", (a) => (a / 100), "{1}%"),
+    new Operation("square", (a) => (a ** 2), "{1}²"),
+    new Operation("square-root", (a) => (a ** 0.5), "√{1}"),
+    new Operation("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
+    new Operation("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}{2}"),
+    new Operation("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
+    new Operation("round", (a) => Math.round(a), "⌈{1}⌋"),
+    new Operation("floor", (a) => Math.floor(a), "⌊{1}⌋"),
+    new Operation("ceiling", (a) => Math.ceil(a), "⌈{1}⌉"),
+    new Operation("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
+    new Operation("ln", (a) => Math.log(a), "ln {1}"),
+    new Operation("logb", (a, b) => (Math.log(a) / Math.log(b)), "log{sup: {2}}{1}"),
 ]
 
 /** Find a operation in the `operations` array by index in the array or name.

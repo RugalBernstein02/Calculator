@@ -3,7 +3,7 @@
 
 /**
  * An Operation represents a function which accepts one or more numbers (operands) and transforms them according to some well-defined rule.
- * The Operation class provides an easily extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
+ * The Operation class provides an easily-extensible framework for defining new calculator operations.
  */
 let Operation = class Operation extends Function {
     #name; #func;
@@ -12,28 +12,17 @@ let Operation = class Operation extends Function {
      */
     formatting;
     /**
-     * @param {string} name - The name of this operation
-     * @param {string} symbol - The symbol which represents this operation
-     * @param {(...operands: number[]) => number} func - The function to call when this operation is called.  Must be a pure function.
-     * @param {string | undefined} formatting - The string to use when formatting operands using `Operation.format`. Leave undefined to use the default formatter.
-     * @returns A new Operation.
+     * @param {string} name The name of this operation
+     * @param {(...operands: number[]) => number} func The function to call when this operation is called.  Must be a pure function.
+     * @param {string} formatting The string to use when formatting operands using `Operation.format`.
      * 
      * @see {@linkcode Operation.format}
      */
-    constructor(name, symbol, func, formatting) {
+    constructor(name, func, formatting) {
         super(func);
         this.#name = name;
-        this.symbol = symbol;
         this.#func = func;
-        if (formatting) {
-            this.formatting = formatting;
-        }
-        else {
-            this.formatting = Array(Math.min(func.length))
-            .fill()
-            .map((_, i) => (`{${i + 1}}`))
-            .join(` ${this.symbol} `)
-        }
+        this.formatting = formatting;
         return new Proxy(this, {
             get: (target, prop) => {
                 if (prop === "name") { return target.#name; }
@@ -77,7 +66,7 @@ let Operation = class Operation extends Function {
       * new Operation("power", ⋯, (a, b) => ⋯, "{1}{sup: {2}}").format(2, 24) // superscript
       * >> "2²⁴"
       * 
-      * @param {number[]} args - the operands for this operation
+      * @param {number[]} args the operands for this operation
       * @returns {string} the formatted string with this operation and operands
       */
     format (...args) {
@@ -87,6 +76,7 @@ let Operation = class Operation extends Function {
         if (args.length > this.length) {
             args = args.slice(0, this.length);
         }
+
         let result = this.formatting;
         let substOperands = result.match(/\{\d+\}/g) ?? []; // find bracketed operand substitutions like {2}.
         for (let match of substOperands) {
@@ -107,7 +97,7 @@ let Operation = class Operation extends Function {
         return `(Operation) ${this.name} (${Array(this.arity).fill().map((_x, i) => String.fromCodePoint(i + 97)).join(" " + this.symbol + " ")})`;
     }
     /** An operation which does nothing. Used as a default or substitute value where a operation is required. */
-    static empty = new Operation("empty", "␀", () => {});
+    static empty = new Operation("empty", () => {}, "");
 }
 
 // export {Operation};
