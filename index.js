@@ -92,17 +92,15 @@ const operations = [
     new Operation("logb", "log<sub>b</sub>", (a, b) => (Math.log(a) / Math.log(b)), {"custom": (a, b) => `log<sub>${b}</sub>${a}`}),
 ]
 
-/** Find a operation in the `operations` array by index in the array, name or symbol.
+/** Find a operation in the `operations` array by index in the array or name.
  *  @param {number | string} searchKey - The string to search for
- *  @returns {Operation} the Operation whose index, name or symbol is the same as `searchKey`
+ *  @returns {Operation} the Operation whose index or name is the same as `searchKey`
  */
 Operation.search = function (searchKey) {
     if (searchKey in operations) {return operations[searchKey];}
     else {
         for (let operation of operations) {
-            if (operation.name === searchKey ||
-                operation.symbol === searchKey
-             ) {return operation;}
+            if (operation.name === searchKey) {return operation;}
         }
         return null;
     }

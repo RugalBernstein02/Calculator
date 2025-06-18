@@ -1,70 +1,39 @@
 // by Mateo Joubert
 "use strict";
 
-function parseExtras (extras) {
-    if (!extras) {return {};}
-    const capitalize = x => x[0].toUpperCase().concat(x.slice(1));
-    const options = [
-        "(boolean) prefix",
-        "(boolean) nonSpaced",
-        "(string) leftRight",
-        "(function) custom"
-    ];
-    const result = {};
-    for (let option of options) {
-        let type = option.match(/(?<=\()[a-z]+(?=\))/)[0];
-        let name = option.match(/[a-zA-Z]+$/)[0];
-        switch (typeof option) {
-            case "boolean":
-                result["is" + capitalize(name)] = Boolean(extras[name]);
-            case "string":
-                result[name] = String(extras[name]);
-            default:
-                result[name] = extras[name];
-        }
-    }
-    return result;
-}
-
 /**
  * An Operation represents a function which accepts one or more numbers (operands) and transforms them according to some well-defined rule.
  * The Operation class provides an easily extensible framework for defining new calculator operations, and was created to replace the existing methodology of hard-coding operations.
  */
 let Operation = class Operation extends Function {
     #name; #func;
-    /****Unary operators only:**
-     * True if this operator should be formatted as a prefix operator. 
-     * Prefix operators appear before their operands e.g. "-6" and "√2".  */
-    isPrefix = false;
-    /** True if this operator should be formatted without spaces around it e.g "3√2" instead of "3 √ 2". */
-    isNonSpaced = false;
-    /** **Unary operators only:** The characters to surround the operand with, separated by a space.  
-     *  For example, suppose `o` is an operation whose `leftRight` option is `"\ /"`. Calling `o.format(42)` results in `\42/`.  
-     *  `leftRight` must consist of two groups of characters separated by one space.
-     *  In other words, it must be of the form /`.* .*`/  
-     *  `leftRight` cannot be used with `prefix`; if both are enabled, `leftRight` will take precedence. */
-    leftRight;
-    /** A custom function for formatting. 
-     *  When `format` is called, it will call this function as a callback and return the result. 
-     *  No other formatting or modification will be applied. */
-    custom;
+    /** A custom string for formatting.
+     * @see {@linkcode Operation.format} for an explanation of format strings
+     */
+    formatting;
     /**
      * @param {string} name - The name of this operation
      * @param {string} symbol - The symbol which represents this operation
-     * @param {(...operands: number[]) => number} func - The function to call when this operation is called. Must be a pure function.
-     * @param {{ prefix?: true, nonSpaced?: true, leftRight?: string, custom?: (...operands: number[]) => string}} extras - Any extra options to add for changing how this operation is formatted. 
-     * @see Operation.isPrefix
-     * @see Operation.isNonSpaced
-     * @see Operation.leftRight
-     * @see Operation.custom
+     * @param {(...operands: number[]) => number} func - The function to call when this operation is called.  Must be a pure function.
+     * @param {string | undefined} formatting - The string to use when formatting operands using `Operation.format`. Leave undefined to use the default formatter.
      * @returns A new Operation.
+     * 
+     * @see {@linkcode Operation.format}
      */
-    constructor(name, symbol, func, extras) {
+    constructor(name, symbol, func, formatting) {
         super(func);
         this.#name = name;
         this.symbol = symbol;
         this.#func = func;
-        Object.assign(this, parseExtras(extras));
+        if (formatting) {
+            this.formatting = formatting;
+        }
+        else {
+            this.formatting = Array(Math.min(func.length))
+            .fill()
+            .map((_, i) => (`{${i + 1}}`))
+            .join(` ${this.symbol} `)
+        }
         return new Proxy(this, {
             get: (target, prop) => {
                 if (prop === "name") { return target.#name; }
@@ -82,18 +51,34 @@ let Operation = class Operation extends Function {
             }
         });
     }
+
     /** Create a string which represents the application of this operator on the given operands.
       * If too few operands are supplied, the remaining operands will default to `""`. 
       * 
-      * @example
-      * multiply.format(2, 3)
-      * >> "2 × 3"  
-      * squareRoot.format(6)
-      * >> "√6"
-      * add.format(4)
-      * >> "4 + "
+      * **Format strings**  
+      * A string, `format`, can be passed when instantiating to define how this operation is formatted. 
+      * The formatting algorithm works by replacing instances of text with special meaning surrounded by curly braces. 
+      * The special format codes which can be used are:
+      * - `{op}` - replaced with this operation's symbol
+      * - `{1}` (, `{2}`, `{3}`, ⋯) - replaced with the first (or second, third, ⋯, nth) operand.
+      * - `{sup: {n}}`, where `n` is a index - `{n}` is first replaced with the value of operand *n*, then displayed as a superscript.
+      * - `{sup: x}`, where `x` is a string - `x` is displayed as a superscript. (`x` may not contain curly braces). 
+      * To use subscripts instead, replace `sup` with `sub` e.g. `{sub: 2}
+      * The default format string is "`{1} {op}`" for unary operators, "`{1} {op} {2}`" for binary operators, "`{1} {op} {2} {op} {3}`" for ternary operators, and so on.
+      * 
+      * **Note:** `format` returns HTML code, e.g. `"log<sub>2</sub>16"`. This must be insterted into an HTML document.
+      * 
+      * (Unnecessary parameters have been omitted in the code below for brevity.) 
+      * @example 
+      * new Operation("multiply", "×", (a, b) => ⋯).format(1, 2) // default formatter
+      * >> "2 × 3"
+      * new Operation("round", ⋯, (a) => ⋯, "⌈{1}⌋").format(3.14)
+      * >> "⌈3.14⌋"
+      * new Operation("power", ⋯, (a, b) => ⋯, "{1}{sup: {2}}").format(2, 24) // superscript
+      * >> "2²⁴"
       * 
       * @param {number[]} args - the operands for this operation
+      * @returns {string} the formatted string with this operation and operands
       */
     format (...args) {
         if (args.length < this.length) {
@@ -102,30 +87,20 @@ let Operation = class Operation extends Function {
         if (args.length > this.length) {
             args = args.slice(0, this.length);
         }
-
-        if (this.custom) {
-            return this.custom(...args);
+        let result = this.formatting;
+        let substOperands = result.match(/\{\d+\}/g) ?? []; // find bracketed operand substitutions like {2}.
+        for (let match of substOperands) {
+            let index = match.match(/\d+/)[0];
+            result = result.replaceAll(match, args[+(index - 1)] ?? "");
+        }
+        let tags = result.match(/\{(sup|sub): (\{\d+\}|[^\}]*)\}/g) ?? [] // find super- and subscript references
+        for (let tag of tags) {
+            let name = tag.match(/(sub|sup)/);
+            let content = tag.match(/(?<=\{(?:sub|sup): )(.*)(?=\})/);
+            result = result.replace(tag, `<${name}>${content}</${name}>`);
         }
 
-        // Special cases for unary operations
-        if (this.length === 1) {
-            if (this.leftRight) {
-                let leftRight = this.leftRight.split(" ");
-                return leftRight[0] +
-                    (this.isNonSpaced ? "" : " ") +
-                    args[0] +
-                    (this.isNonSpaced ? "" : " ") +
-                    leftRight[1];
-            }
-            else if (this.isPrefix) {
-                return `${this.symbol}${this.isNonSpaced ? "" : " "}${args[0]}`;
-            }
-            else {
-                return `${args[0]}${this.isNonSpaced ? "" : " "}${this.symbol}`;
-            }
-        }
-        let joiner = this.isNonSpaced ? this.symbol : " " + this.symbol + " ";
-        return args.join(joiner);
+        return result;
     }
 
     toString() {
