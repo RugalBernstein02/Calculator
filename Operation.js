@@ -14,9 +14,7 @@ let Operation = class Operation extends Function {
     /**
      * @param {string} name The name of this operation
      * @param {(...operands: number[]) => number} func The function to call when this operation is called.  Must be a pure function.
-     * @param {string} formatting The string to use when formatting operands using `Operation.format`.
-     * 
-     * @see {@linkcode Operation.format}
+     * @param {string} formatting The string to use when formatting operands using {@linkcode Operation.format}.
      */
     constructor(name, func, formatting) {
         super(func);
@@ -96,8 +94,10 @@ let Operation = class Operation extends Function {
     toString() {
         return `(Operation) ${this.name} (${Array(this.arity).fill().map((_x, i) => String.fromCodePoint(i + 97)).join(" " + this.symbol + " ")})`;
     }
-    /** An operation which does nothing. Used as a default or substitute value where a operation is required. */
+    /** A nullary operation which does nothing. Used as a default or substitute value where a operation is required. */
     static empty = new Operation("empty", () => {}, "");
+    /** A unary operation which returns its operand. Used as a default or substitute value where a operation is required. */
+    static identity = new Operation("identity", x => x, "{1}");
 }
 
 // export {Operation};

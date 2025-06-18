@@ -87,7 +87,19 @@ body > * {
     background-image: linear-gradient(white, #77f);
 }
 
-#top-row > .more, #more-dialog .more  {
+.calc-button.trigonometry {
+    background-image: linear-gradient(white, #904);
+}
+
+.calc-button.logarithm {
+    background-image: linear-gradient(white, #409);
+}
+
+.calc-button.constant {
+    background-image: linear-gradient(white, #040);
+}
+
+#top-row > .more, #return  {
     background-image: linear-gradient(white, #640);
 }
 

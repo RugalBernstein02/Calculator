@@ -84,26 +84,27 @@ const operations = [
     new Operation("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
     new Operation("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}{2}"),
     new Operation("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
-    new Operation("round", (a) => Math.round(a), "⌈{1}⌋"),
-    new Operation("floor", (a) => Math.floor(a), "⌊{1}⌋"),
-    new Operation("ceiling", (a) => Math.ceil(a), "⌈{1}⌉"),
+    new Operation("modulus", (a, b) => (a % b), "{1} mod {2}"),
     new Operation("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
     new Operation("ln", (a) => Math.log(a), "ln {1}"),
     new Operation("logb", (a, b) => (Math.log(a) / Math.log(b)), "log{sup: {2}}{1}"),
+    new Operation("sine", (a) => (Math.sin(a)), "sin({1})"),
+    new Operation("cosine", (a) => (Math.cos(a)), "cos({1})"),
+    new Operation("tangent", (a) => (Math.tan(a)), "tan({1})"),
+    new Operation("hyperbolic-sine", (a) => (Math.sinh(a)), "sinh({1})"),
+    new Operation("hyperbolic-cosine", (a) => (Math.cosh(a)), "cosh({1})"),
+    new Operation("hyperbolic-tangent", (a) => (Math.tanh(a)), "tanh({1})"),
 ]
 
-/** Find a operation in the `operations` array by index in the array or name.
+/** Find a operation in the `operations` array by name.
  *  @param {number | string} searchKey - The string to search for
  *  @returns {Operation} the Operation whose index or name is the same as `searchKey`
  */
 Operation.search = function (searchKey) {
-    if (searchKey in operations) {return operations[searchKey];}
-    else {
-        for (let operation of operations) {
-            if (operation.name === searchKey) {return operation;}
-        }
-        return null;
+    for (let operation of operations) {
+        if (operation.name === searchKey) {return operation;}
     }
+    return null;
 }
 
 // § Main logic
@@ -351,16 +352,13 @@ document.querySelectorAll(".calc-button").forEach(button => {
             // U+212F = ℯ SCRIPT SMALL LETTER E
             handler = () => {showValue("\u212f", 2.718281828, true)};
             break;
-        case "round":
-        case "ceiling":
-        case "floor":
-        case "log10":
-        case "ln":
-        case "logb":
-            handler = (event) => {prepare(Operation.search(event.target.id))};
-            break;
         default:
-            console.warn("No handler for \"" + button.id + "\"");
+            if (Operation.search(button.id)) {
+                handler = (event) => {prepare(Operation.search(event.target.id))};
+            }
+            else {
+                console.warn("Did not set handler for \"" + button.id + "\"");
+            }
     }
     button.addEventListener("click", handler);
 });
