@@ -54,41 +54,41 @@ function attribute (elem, attr, value) {
     return old;
 }
 
-// § Operations
+// § Operators
 
-/** The list of operations supported by this calculator. */
-const operations = [
-    new Operation("identity", x => x, "{1} = "),
-    new Operation("add", (a, b) => (a + b), "{1} + {2}"),
-    new Operation("subtract", (a, b) => (a - b), "{1} - {2}"),
+/** The list of operators supported by this calculator. */
+const operators = [
+    new Operator("identity", x => x, "{1} = "),
+    new Operator("add", (a, b) => (a + b), "{1} + {2}"),
+    new Operator("subtract", (a, b) => (a - b), "{1} - {2}"),
     // U+00D7 = "×" MULTIPLICATION SIGN
-    new Operation("multiply", (a, b) => (a * b), "{1} \u00D7 {2}"), 
-    new Operation("divide", (a, b) => (a / b), "{1} ÷ {2}"),
-    new Operation("hundredth", (a) => (a / 100), "{sup: {1}}/{sub: 100}"),
-    new Operation("square", (a) => (a ** 2), "{1}²"),
-    new Operation("square-root", (a) => (a ** 0.5), "√{1}"),
-    new Operation("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
-    new Operation("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}√{2}"),
-    new Operation("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
-    new Operation("modulus", (a, b) => (a % b), "{1} mod {2}"),
-    new Operation("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
-    new Operation("ln", (a) => Math.log(a), "ln {1}"),
-    new Operation("logb", (a, b) => (Math.log(b) / Math.log(a)), "log{sub: {1}}{2}"),
-    new Operation("sine", (a) => (Math.sin(a)), "sin({1})"),
-    new Operation("cosine", (a) => (Math.cos(a)), "cos({1})"),
-    new Operation("tangent", (a) => (Math.tan(a)), "tan({1})"),
-    new Operation("hyperbolic-sine", (a) => (Math.sinh(a)), "sinh({1})"),
-    new Operation("hyperbolic-cosine", (a) => (Math.cosh(a)), "cosh({1})"),
-    new Operation("hyperbolic-tangent", (a) => (Math.tanh(a)), "tanh({1})"),
+    new Operator("multiply", (a, b) => (a * b), "{1} \u00D7 {2}"), 
+    new Operator("divide", (a, b) => (a / b), "{1} ÷ {2}"),
+    new Operator("hundredth", (a) => (a / 100), "{sup: {1}}/{sub: 100}"),
+    new Operator("square", (a) => (a ** 2), "{1}²"),
+    new Operator("square-root", (a) => (a ** 0.5), "√{1}"),
+    new Operator("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
+    new Operator("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}√{2}"),
+    new Operator("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
+    new Operator("modulus", (a, b) => (a % b), "{1} mod {2}"),
+    new Operator("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
+    new Operator("ln", (a) => Math.log(a), "ln {1}"),
+    new Operator("logb", (a, b) => (Math.log(b) / Math.log(a)), "log{sub: {1}}{2}"),
+    new Operator("sine", (a) => (Math.sin(a)), "sin({1})"),
+    new Operator("cosine", (a) => (Math.cos(a)), "cos({1})"),
+    new Operator("tangent", (a) => (Math.tan(a)), "tan({1})"),
+    new Operator("hyperbolic-sine", (a) => (Math.sinh(a)), "sinh({1})"),
+    new Operator("hyperbolic-cosine", (a) => (Math.cosh(a)), "cosh({1})"),
+    new Operator("hyperbolic-tangent", (a) => (Math.tanh(a)), "tanh({1})"),
 ];
 
-/** Find a operation in the `operations` array by name.
+/** Find a operator in the `operators` array by name.
  *  @param {number | string} searchKey - The string to search for
- *  @returns {Operation} the Operation whose index or name is the same as `searchKey`
+ *  @returns {Operator} the Operator whose index or name is the same as `searchKey`
  */
-Operation.search = function (searchKey) {
-    for (let operation of operations) {
-        if (operation.name === searchKey) {return operation;}
+Operator.search = function (searchKey) {
+    for (let operator of operators) {
+        if (operator.name === searchKey) {return operator;}
     }
     return null;
 }
@@ -101,10 +101,10 @@ const NO_OP = () => {},
 moreDialog = document.querySelector("#more-dialog"),
 /** The container which holds buttons for basic buttons like digits, addition and clear. */
 buttonContainer = document.querySelector("#button-container");
-/** The operands which will be supplied to a operation. */
+/** The operands which will be supplied to a operator. */
 let operands = [],
-/** The queued operation to perform when the `=` key is pressed. */
-operation = Operation.search("identity"),
+/** The queued operator to perform when the `=` key is pressed. */
+operator = Operator.search("identity"),
 /** True if the "m" key is being pressed/held, used to make memory key combinations (e.g. M + A) work. 
  *  See README#Keyboard Input.
  */
@@ -219,7 +219,7 @@ function clear () {
     blankDisplay(true, true);
     // Reset internal variables to their initial values
     operands = [];
-    operation = Operation.identity;
+    operator = Operator.identity;
     inputStage = 0;
 }
 
@@ -239,12 +239,12 @@ function set2ndf (enabled) {
 }
 
 function prepare (op) {
-    operation = op;
+    operator = op;
     operands[0] = +(mainHTML());
     operands.length = 1;
-    let text = operation.format(...operands);
+    let text = operator.format(...operands);
     secondaryHTML(text);
-    if (operation.length == 1) {
+    if (operator.length == 1) {
         calculate();
     }
     else {
@@ -254,29 +254,29 @@ function prepare (op) {
 }
 
 function calculate (extras = {}) {
-    // Repeat mechanism - choose first or second operand depending on whether this operation is being repeated
+    // Repeat mechanism - choose first or second operand depending on whether this operator is being repeated
     operands[inputStage === 0 ? 0 : 1] = +(mainHTML());
     // ensure that only the necessary operands are supplied
-    operands.length = operation.length;
+    operands.length = operator.length;
     // prepare for special percentage calculation
     if (extras.percentage) {
         extras.ogo2 = operands[1]; // "ogo2" = "OriGinal Operand2"
         operands[1] = operands[0] * (operands[1] / 100);
     }
     
-    operands.length = operation.length;
-    let result = operation.apply(operation, operands);
+    operands.length = operator.length;
+    let result = operator.apply(operator, operands);
     result = sigfigs(result, 11);
     mainHTML(result);
 
     if (extras.percentage) {
         operands[1] = extras.ogo2 + "%";
     }
-    let text = operation.format.apply(operation, operands);
+    let text = operator.format.apply(operator, operands);
     secondaryHTML(text);
-    if (operation.name == "divide" && operands[1] == 0) {
+    if (operator.name == "divide" && operands[1] == 0) {
         mainHTML("undefined");
-        operation = Operation.empty;
+        operator = Operator.empty;
     }
 
     inputStage = 0;
@@ -302,16 +302,16 @@ document.querySelectorAll(".calc-button").forEach(button => {
         case "multiply": 
             handler = () => {
                 let second = attribute(button, "data-secondf")?.split(" ")[0];
-                prepare(secondf ? Operation.search(second) : Operation.search(button.id));
+                prepare(secondf ? Operator.search(second) : Operator.search(button.id));
             };
             break;
         case "percentage":
             handler = () => {
                 if (secondf) {
-                    prepare(Operation.search("scientific"));
+                    prepare(Operator.search("scientific"));
                 }
                 else if (inputStage < 2) {
-                    prepare(Operation.search("hundredth"));
+                    prepare(Operator.search("hundredth"));
                 }
                 else if (inputStage === 2) {
                     calculate({percentage: true});
@@ -323,7 +323,7 @@ document.querySelectorAll(".calc-button").forEach(button => {
             break;
         case "decimal":
             handler = () => {
-                secondf ? prepare(Operation.search("scientific")) : input(".");
+                secondf ? prepare(Operator.search("scientific")) : input(".");
             };
             break;
         case "clear-all":
@@ -358,8 +358,8 @@ document.querySelectorAll(".calc-button").forEach(button => {
             handler = () => {showValue("\u212f", 2.718281828, true)};
             break;
         default:
-            if (Operation.search(button.id)) {
-                handler = (event) => {prepare(Operation.search(event.target.id))};
+            if (Operator.search(button.id)) {
+                handler = (event) => {prepare(Operator.search(event.target.id))};
             }
             else {
                 console.warn("Did not set handler for \"" + button.id + "\"");

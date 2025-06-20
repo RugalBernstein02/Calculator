@@ -7,7 +7,7 @@ This webpage was created as part of my work for the FNB App Academy program. Thi
 When you make a mistake or want to abort the current calculation, you can use the `C` and `AC` buttons. Press `C` to clear the display, but keep the current calculation. Press `AC` to clear everything.
 
 ### Repeat
-When you have done a calculation, you may press the `=` key to perform the same operation again on the result. For example, to multiply by 3 repeatedly: 
+When you have done a calculation, you may press the `=` key to perform the same operator again on the result. For example, to multiply by 3 repeatedly: 
 
 1. Input `2` `✕` `3` `=`.
 2. Press `=` again. The calculator will multiply the result, 6, by 3 again.
