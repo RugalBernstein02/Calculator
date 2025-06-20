@@ -47,7 +47,7 @@ let Operation = class Operation extends Function {
       * The formatting algorithm works by replacing instances of text with special meaning surrounded by curly braces. 
       * The special format codes which can be used are:
       * - `{op}` - replaced with this operation's symbol
-      * - `{1}` (, `{2}`, `{3}`, ⋯) - replaced with the first (or second, third, ⋯, nth) operand.
+      * - `{1}` (, `{2}`, `{3}`, ⋯) - replaced with the first (or second, third, ⋯, *n*th) operand.
       * - `{sup: {n}}`, where `n` is a index - `{n}` is first replaced with the value of operand *n*, then displayed as a superscript.
       * - `{sup: x}`, where `x` is a string - `x` is displayed as a superscript. (`x` may not contain curly braces). 
       * To use subscripts instead, replace `sup` with `sub` e.g. `{sub: 2}
@@ -94,10 +94,6 @@ let Operation = class Operation extends Function {
     toString() {
         return `(Operation) ${this.name} (${Array(this.arity).fill().map((_x, i) => String.fromCodePoint(i + 97)).join(" " + this.symbol + " ")})`;
     }
-    /** A nullary operation which does nothing. Used as a default or substitute value where a operation is required. */
-    static empty = new Operation("empty", () => {}, "");
-    /** A unary operation which returns its operand. Used as a default or substitute value where a operation is required. */
-    static identity = new Operation("identity", x => x, "{1}");
 }
 
 // export {Operation};

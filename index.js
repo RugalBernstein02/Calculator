@@ -40,41 +40,13 @@ function attribute (elem, attr, value) {
         elem.setAttribute(attr, value);
     }
     return old;
-} 
-
-// § constants and variables
-
-/** A function which does nothing. Used as a default or substitute value where a function is required. */
-const NO_OP = () => {},
-/** The container which holds buttons for extra buttons like sin, floor and ln. */
-moreDialog = document.querySelector("#more-dialog"),
-/** The container which holds buttons for basic buttons like digits, addition and clear. */
-buttonContainer = document.querySelector("#button-container");
-/** The operands which will be supplied to a operation. */
-let operands = [],
-/** The queued operation to perform when the result is requested. */
-operation = Operation.identity,
-/** True if the "m" key is being pressed/held, used to make memory key combinations (e.g. M + A) work. 
- *  See README#Keyboard Input.
- */
-mDown = false,
-/** `true` if second function mode is enabled. 
- *  2ndf mode allows the user to toggle between two set of functions on the same key 
- *  (much like the Shift key toggles between two sets of characters). */
-secondf = false,
-/** The function to call the next time something is entered */
-onInput = NO_OP,
-/** The current stage of input. 
-Inputting data is divided into three stages, for inputting each operand. The value of this variable is   
-- 0 if no data has been entered yet,  
-- 1 if the user is entering the first operand, and  
-- 2 if the user is entering the second operand. */
-inputStage = 0;
+}  
 
 // § Operations
 
 /** The list of operations supported by this calculator. */
 const operations = [
+    new Operation("identity", x => x, "{1} = "),
     new Operation("add", (a, b) => (a + b), "{1} + {2}"),
     new Operation("subtract", (a, b) => (a - b), "{1} - {2}"),
     // U+00D7 = "×" MULTIPLICATION SIGN
@@ -96,7 +68,7 @@ const operations = [
     new Operation("hyperbolic-sine", (a) => (Math.sinh(a)), "sinh({1})"),
     new Operation("hyperbolic-cosine", (a) => (Math.cosh(a)), "cosh({1})"),
     new Operation("hyperbolic-tangent", (a) => (Math.tanh(a)), "tanh({1})"),
-]
+];
 
 /** Find a operation in the `operations` array by name.
  *  @param {number | string} searchKey - The string to search for
@@ -108,6 +80,35 @@ Operation.search = function (searchKey) {
     }
     return null;
 }
+
+// § constants and variables
+
+/** A function which does nothing. Used as a default or substitute value where a function is required. */
+const NO_OP = () => {},
+/** The container which holds buttons for extra buttons like sin, floor and ln. */
+moreDialog = document.querySelector("#more-dialog"),
+/** The container which holds buttons for basic buttons like digits, addition and clear. */
+buttonContainer = document.querySelector("#button-container");
+/** The operands which will be supplied to a operation. */
+let operands = [],
+/** The queued operation to perform when the result is requested. */
+operation = Operation.search("identity"),
+/** True if the "m" key is being pressed/held, used to make memory key combinations (e.g. M + A) work. 
+ *  See README#Keyboard Input.
+ */
+mDown = false,
+/** `true` if second function mode is enabled. 
+ *  2ndf mode allows the user to toggle between two set of functions on the same key 
+ *  (much like the Shift key toggles between two sets of characters). */
+secondf = false,
+/** The function to call the next time something is entered */
+onInput = NO_OP,
+/** The current stage of input. 
+Inputting data is divided into three stages, for inputting each operand. The value of this variable is   
+- 0 if no data has been entered yet,  
+- 1 if the user is entering the first operand, and  
+- 2 if the user is entering the second operand. */
+inputStage = 0;
 
 // § Main logic
 
@@ -391,7 +392,7 @@ document.addEventListener("keydown", (event) => {
     else if (key === ".") {
         document.getElementById("decimal").click();
     }
-    else if (key === "Enter") {
+    else if (key === "Enter" || key == "=") {
         document.getElementById("result").click();
     }
     else if (key === "Backspace") {
