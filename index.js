@@ -42,10 +42,14 @@ function attribute (elem, attr, value) {
     return old;
 } 
 
-// § variables and constants
+// § constants and variables
 
 /** A function which does nothing. Used as a default or substitute value where a function is required. */
-const NO_OP = () => {};
+const NO_OP = () => {},
+/** The container which holds buttons for extra buttons like sin, floor and ln. */
+moreDialog = document.querySelector("#more-dialog"),
+/** The container which holds buttons for basic buttons like digits, addition and clear. */
+buttonContainer = document.querySelector("#button-container");
 /** The operands which will be supplied to a operation. */
 let operands = [],
 /** The queued operation to perform when the result is requested. */
@@ -59,17 +63,13 @@ mDown = false,
  *  (much like the Shift key toggles between two sets of characters). */
 secondf = false,
 /** The function to call the next time something is entered */
-oninput = NO_OP,
+onInput = NO_OP,
 /** The current stage of input. 
 Inputting data is divided into three stages, for inputting each operand. The value of this variable is   
 - 0 if no data has been entered yet,  
 - 1 if the user is entering the first operand, and  
 - 2 if the user is entering the second operand. */
-inputStage = 0,
-/** The container which holds buttons for extra buttons like sin, floor and ln. */
-moreDialog = document.querySelector("#more-dialog"),
-/** The container which holds buttons for basic buttons like digits, addition and clear. */
-buttonContainer = document.querySelector("#button-container");
+inputStage = 0;
 
 // § Operations
 
@@ -165,17 +165,13 @@ const memory = {
  *  @param {boolean} [secondary = true] - whether to clear the secondary display
  */
 function blankDisplay (main = true, secondary = true) {
-    if (main) {
-        mainHTML("0");
-    }
-    if (secondary) {
-        secondaryHTML("");
-    }
+    if (main) {mainHTML("0");}
+    if (secondary) {secondaryHTML("");}
 }
 
 function input (char) {
-    oninput();
-    oninput = NO_OP;
+    onInput();
+    onInput = NO_OP;
     if (char === "." && mainHTML().includes(".")) {return null;}
     if (inputStage === 0) {inputStage = 1;}
     if (mainHTML() === "") {
@@ -209,9 +205,10 @@ function backspace () {
 function clear () {
     blankDisplay(true, true);
     // Reset internal variables to their initial values
-    operands = [];
-    operation = Operation.empty;
-    inputStage = 0;
+    // (disabled for debugging)
+    /* operands = [];
+    operation = Operation.identity;
+    inputStage = 0; */
 }
 
 function set2ndf (enabled) {
@@ -245,15 +242,13 @@ function prepare (op) {
 }
 
 function calculate (extras = {}) {
-
-    // Repeat mechanism
+    // Repeat mechanism - choose first or second operand depending on whether this operation is being repeated
     operands[inputStage === 0 ? 0 : 1] = +(mainHTML());
-
+    // ensure that only the necessary operands are supplied
     operands.length = operation.length;
-    
+    // prepare for special percentage calculation
     if (extras.percentage) {
-        // "ogo2" = original operand2
-        extras.ogo2 = operands[1];
+        extras.ogo2 = operands[1]; // "ogo2" = "OriGinal Operand2"
         operands[1] = operands[0] * (operands[1] / 100);
     }
     
@@ -274,7 +269,7 @@ function calculate (extras = {}) {
 
     inputStage = 0;
     set2ndf(false);
-    oninput = blankDisplay;
+    onInput = function calculate () {blankDisplay(true, true);}
 }
 
 // § Event handlers
