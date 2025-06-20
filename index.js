@@ -64,7 +64,7 @@ const operations = [
     // U+00D7 = "×" MULTIPLICATION SIGN
     new Operation("multiply", (a, b) => (a * b), "{1} \u00D7 {2}"), 
     new Operation("divide", (a, b) => (a / b), "{1} ÷ {2}"),
-    new Operation("hundredth", (a) => (a / 100), "{1}%"),
+    new Operation("hundredth", (a) => (a / 100), "{sup: {1}}/{sub: 100}"),
     new Operation("square", (a) => (a ** 2), "{1}²"),
     new Operation("square-root", (a) => (a ** 0.5), "√{1}"),
     new Operation("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
@@ -103,7 +103,7 @@ moreDialog = document.querySelector("#more-dialog"),
 buttonContainer = document.querySelector("#button-container");
 /** The operands which will be supplied to a operation. */
 let operands = [],
-/** The queued operation to perform when the result is requested. */
+/** The queued operation to perform when the `=` key is pressed. */
 operation = Operation.search("identity"),
 /** True if the "m" key is being pressed/held, used to make memory key combinations (e.g. M + A) work. 
  *  See README#Keyboard Input.
@@ -116,7 +116,7 @@ secondf = false,
 /** The function to call the next time something is entered */
 onInput = NO_OP,
 /** The current stage of input. 
-Inputting data is divided into three stages, for inputting each operand. The value of this variable is   
+The process of entering data is divided into three stages. The value of this variable is   
 - 0 if no data has been entered yet,  
 - 1 if the user is entering the first operand, and  
 - 2 if the user is entering the second operand. */
@@ -218,10 +218,9 @@ function backspace () {
 function clear () {
     blankDisplay(true, true);
     // Reset internal variables to their initial values
-    // (disabled for debugging)
-    /* operands = [];
+    operands = [];
     operation = Operation.identity;
-    inputStage = 0; */
+    inputStage = 0;
 }
 
 function set2ndf (enabled) {
@@ -245,11 +244,11 @@ function prepare (op) {
     operands.length = 1;
     let text = operation.format(...operands);
     secondaryHTML(text);
-    mainHTML("0");
     if (operation.length == 1) {
         calculate();
     }
     else {
+        mainHTML("0");
         inputStage = 2;
     }
 }
@@ -282,7 +281,7 @@ function calculate (extras = {}) {
 
     inputStage = 0;
     set2ndf(false);
-    onInput = function calculate () {blankDisplay(true, true);}
+    onInput = blankDisplay;
 }
 
 // § Event handlers
@@ -311,7 +310,7 @@ document.querySelectorAll(".calc-button").forEach(button => {
                 if (secondf) {
                     prepare(Operation.search("scientific"));
                 }
-                else if (inputStage === 1) {
+                else if (inputStage < 2) {
                     prepare(Operation.search("hundredth"));
                 }
                 else if (inputStage === 2) {
