@@ -57,6 +57,7 @@ function attribute (elem, attr, value) {
 // § Operators
 
 /** The list of operators supported by this calculator. */
+// Some operators use ⛶ (U+2646 FOUR CORNERS) as a placeholder.
 const operators = [
     new Operator("identity", x => x, "{1} = "),
     new Operator("add", (a, b) => (a + b), "{1} + {2}"),
@@ -67,13 +68,13 @@ const operators = [
     new Operator("hundredth", (a) => (a / 100), "{sup: {1}}/{sub: 100}"),
     new Operator("square", (a) => (a ** 2), "{1}²"),
     new Operator("square-root", (a) => (a ** 0.5), "√{1}"),
-    new Operator("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
-    new Operator("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}√{2}"),
-    new Operator("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
+    new Operator("power", (a, b) => (a ** b), "{1}{sup: {2|⛶}}"),
+    new Operator("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}√{2|⛶}"),
+    new Operator("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2|⛶}}"),
     new Operator("modulus", (a, b) => (a % b), "{1} mod {2}"),
     new Operator("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
     new Operator("ln", (a) => Math.log(a), "ln {1}"),
-    new Operator("logb", (a, b) => (Math.log(b) / Math.log(a)), "log{sub: {1}}{2}"),
+    new Operator("logb", (a, b) => (Math.log(b) / Math.log(a)), "log{sub: {1}}{2|⛶}"),
     new Operator("sine", (a) => (Math.sin(a)), "sin({1})"),
     new Operator("cosine", (a) => (Math.cos(a)), "cos({1})"),
     new Operator("tangent", (a) => (Math.tan(a)), "tan({1})"),

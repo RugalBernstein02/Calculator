@@ -40,15 +40,19 @@ let Operator = class Operator extends Function {
     }
 
     /** Create a string which represents the application of this operator on the given operands.
-      * If too few operands are supplied, the remaining operands will default to `""`. 
+      * If too few operands are supplied, the remaining operands will default to `""`, unless an alternative is specified (see the `{n|x}` format code). 
       * 
       * **Format strings**  
       * A string, `format`, can be passed when instantiating to define how this operator is formatted. 
       * The formatting algorithm works by replacing instances of certain special substrings. 
-      * The special format codes which can be used are:
-      * - `{1}` (, `{2}`, `{3}`, ⋯) - replaced with the first (or second, third, ⋯, *n*th) operand.
-      * - `{sup: x}`, where `x` is a string - `x` is displayed as a superscript. (`x` may not contain curly braces). 
-      * - `{sup: {n}}`, where `n` is a index - `{n}` is first replaced with the value of operand *n*, then displayed as a superscript.
+      * The special format codes which can be used are described below.  
+      * (Note that `n` means an operand index, that is, an integer from 1 to `this.length`, 
+      * and `x` means any string.)
+      * - `{n}` is replaced with the *n*th operand.
+      * - `{n|x}` is replaced with the *n*th operand if it was passed to the `operands` parameter, or `x` otherwise.  
+      * This is useful for creating placeholders.
+      * - `{sup: x}` - `x` is displayed as a superscript. (`x` may not contain curly braces). 
+      * - `{sup: {n}}` - `{n}` is first replaced with the value of operand *n*, then displayed as a superscript.
       * To use subscripts instead, replace `sup` with `sub` e.g. `{sub: 2}
       * 
       * **Note:** `format` returns HTML code, e.g. `"log<sub>2</sub>16"`. This must be insterted into an HTML document.
@@ -59,24 +63,26 @@ let Operator = class Operator extends Function {
       * new Operator("power", (a, b) => ⋯, "{1}{sup: {2}}").format(2, 24) // superscript
       * >> "2²⁴"
       * 
-      * @param {number[]} args the operands for this operator
+      * @param {number[]} operands the operands for this operator
       * @returns {string} the formatted string with this operator and operands
       */
-    format (...args) {
-        if (args.length < this.length) {
-            args.length = this.length;
+    format (...operands) {
+        if (operands.length < this.length) {
+            operands.length = this.length;
         }
-        if (args.length > this.length) {
-            args = args.slice(0, this.length);
+        if (operands.length > this.length) {
+            operands = operands.slice(0, this.length);
         }
 
         let result = this.formatting;
-        let substOperands = result.match(/\{\d+\}/g) ?? []; // find bracketed operand substitutions like {2}.
-        for (let match of substOperands) {
-            let index = match.match(/\d+/)[0];
-            result = result.replaceAll(match, args[+(index - 1)] ?? "");
-        }
-        let tags = result.match(/\{(sup|sub): (\{\d+\}|[^\}]*)\}/g) ?? [] // find super- and subscript substitutions like {sup: 3}
+        result.match(/\{\d+(\|[^\}]+)?\}/g) // find operand substitutions like {1} and {2|x}.
+        ?.forEach(match => {
+            let index = match.match(/(?<=\{)\d+(?=\||\})/)[0];
+            let alternative = /\|[^\}]+\}/.test(match) && match.match(/(?<=\|)[^\}]+(?=\})/)[0];
+            result = result.replace(match, operands[+(index - 1)] || alternative || "");
+        })
+
+        let tags = result.match(/\{(sup|sub): (\{\d+\}|[^\}]+)\}/g) ?? [] // find super- and subscript substitutions like {sup: 3}
         for (let tag of tags) {
             let name = tag.match(/(sub|sup)/)[0];
             let content = tag.match(/(?<=\{(?:sub|sup): )(.*)(?=\})/)[0];
