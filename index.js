@@ -11,6 +11,18 @@ function round (x, n) {
     return Math.round(x * (10 ** n)) / (10 ** n);
 }
 
+/** Round a number off to the given number of significant figures
+  * @example round(Math.PI * 100, 3) => 314.159
+  * @param {number} x - the number to round off
+  * @param {number} n - the number of significant figures to round to
+  */
+function sigfigs (x, n) {
+    if (x === 0) {return 0;}
+    const p = n - Math.ceil(Math.log10(Math.abs(x)));
+    if (p < 1) {return Math.floor(x);}
+    return Math.floor(x) + round(x - Math.floor(x), p);
+}
+
 /** Set the `innerText` property of an element, and return its old value.  
  *  Does not change the `innerText` if `value` is undefined.  
  *  @param {string | HTMLElement} elem - the id or DOM object for the target element
@@ -40,7 +52,7 @@ function attribute (elem, attr, value) {
         elem.setAttribute(attr, value);
     }
     return old;
-}  
+}
 
 // § Operations
 
@@ -56,7 +68,7 @@ const operations = [
     new Operation("square", (a) => (a ** 2), "{1}²"),
     new Operation("square-root", (a) => (a ** 0.5), "√{1}"),
     new Operation("power", (a, b) => (a ** b), "{1}{sup: {2}}"),
-    new Operation("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}{2}"),
+    new Operation("nth-root", (a, b) => (b ** (1 / a)), "{sup: {1}}√{2}"),
     new Operation("scientific", (a, b) => (a * 10 ** b), "{1}\u00D710{sup: {2}}"),
     new Operation("modulus", (a, b) => (a % b), "{1} mod {2}"),
     new Operation("log10", (a) => Math.log10(a), "log{sub: 10}{1}"),
@@ -255,7 +267,7 @@ function calculate (extras = {}) {
     
     operands.length = operation.length;
     let result = operation.apply(operation, operands);
-    result = round(result, 12);
+    result = sigfigs(result, 11);
     mainHTML(result);
 
     if (extras.percentage) {
